@@ -41,6 +41,8 @@ INSTALLED_APPS = [
 
     # apps
     'pdv',
+    'rest_framework',
+    'bootstrap5',
 ]
 
 MIDDLEWARE = [

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Lista de produtos{% endblock %}
+
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h4 class="card-title">Lista de produtos</h4>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome do produto</th>
+                        <th>Preço</th>
+                        <th>Descrição</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for produto in produtos %}
+                        <tr>
+                            <th scope="row">{{ produto.id }}</th>
+                            <td>{{ produto.nome_produto }}</td>
+                            <td>{{ produto.preco_do_produto }}</td>
+                            <td>{{ produto.descricao }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="pagination">
+                <span class="step-links">
+                    {% if produtos.has_previous %}
+                        <a href="?page=1">&laquo; Primeiro</a>
+                        <a href="?page={{ produtos.previous_page_number }}">Voltar</a>
+                    {% endif %}
+
+                    <span class="current">
+                        Página {{ produtos.number }} de {{ produtos.paginator.num_pages }}.
+                    </span>
+
+                    {% if produtos.has_next %}
+                        <a href="?page={{ produtos.next_page_number }}">Próximo</a>
+                        <a href="?page={{ produtos.paginator.num_pages }}">Ultimo &raquo;</a>
+                    {% endif %}
+                </span>
+            </div>
+
+            <a href="{% url 'cadastrar-produtos' %}" type="button" class="btn btn-secondary btn-min-width mr-1 mb-1 mt-1">
+                <i class="icon-plus white mr-1"></i> Cadastrar produtos
+            </a>
+        </div>
+    </div>
+</div>
+
+
+{% endblock content %}
+

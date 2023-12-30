@@ -1,16 +1,69 @@
+{% extends "base.html" %}
 {% load static %}
-<!doctype html>
-<html lang="pt-br">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Bootstrap demo</title>
-    <link rel="stylesheet" type="text/css" href="{% static 'css/admin.css' %}">
-    
-  </head>
-  <body>
-    <h1>Hello, world!</h1>
-    
-    <script src="{% static 'js/admin.js' %}"></script>
-  </body>
-</html>
+{% block title %}Home{% endblock %}
+
+
+{% block content %}
+    <div class="row">
+        <div class="col-xl-4 col-lg-6 col-12">
+            <div class="card">
+                <div class="card-content">
+                    <div class="media align-items-stretch">
+                        <div class="p-2 text-center bg-primary bg-darken-2">
+                            <i class="icon-social-dropbox font-large-2 white"></i>
+                        </div>
+                        <div class="d-flex align-items-center p-2 bg-gradient-x-primary white media-body">
+                            <h5>Proutos</h5>
+                        </div>
+                        <a href="{% url 'cadastrar-produtos' %}">
+                            <div class="p-2 text-center bg-primary bg-darken-2">
+                                <i class="icon-arrow-right font-large-2 white"></i>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-lg-6 col-12">
+            <div class="card">
+                <div class="card-content">
+                    <div class="media align-items-stretch">
+                        <div class="p-2 text-center bg-success bg-darken-2">
+                            <i class="icon-wallet font-large-2 white"></i>
+                        </div>
+                        <div class="d-flex align-items-center p-2 bg-gradient-x-success white media-body">
+                            <h5>Relatório de vendas</h5>
+                        </div>
+                        <a href="{% url 'relatorio-de-vendas' %}">
+
+                            <div class="p-2 text-center bg-success bg-darken-2">
+                                <i class="icon-arrow-right font-large-2 white"></i>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-lg-6 col-12">
+            <div class="card">
+                <div class="card-content">
+                    <div class="media align-items-stretch">
+                        <div class="p-2 text-center bg-warning bg-darken-2">
+                            <i class="icon-basket-loaded font-large-2 white"></i>
+                        </div>
+                        <div class="d-flex align-items-center p-2 bg-gradient-x-warning white media-body">
+                            <h5>Caixa</h5>
+                        </div>
+                        <a href="{% url 'caixa' %}">
+
+                            <div class="p-2 text-center bg-warning bg-darken-2">
+                                <i class="icon-arrow-right font-large-2 white"></i>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}

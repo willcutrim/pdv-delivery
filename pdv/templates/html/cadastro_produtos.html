@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load bootstrap5 %}
+{% load static %}
+{% block title %}Cadastro de produtos{% endblock %}
+
+
+{% block content %}
+    <form method="post">
+        {% csrf_token %}
+        {{ form }}
+        <button type="submit" class="btn btn-secondary btn-min-width mr-1 mb-1 mt-1">Cadastrar</button>
+        <a  href="{% url 'lista-de-produtos' %}" type="button" class="btn btn-light btn-min-width mr-1 mb-1 mt-1">Ver produtos</a>
+    </form>
+{% endblock content %}

@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Relatório de vendas{% endblock %}
+
+
+{% block content %}
+<div class="card">
+    <div class="d-flex justify-content-between card-header ">
+        <h4 class="card-title">Relatório de vendas</h4>
+        <form method="get" class="form-inline">
+            <div class="form-group mr-1">
+                <label for="inputDate" class="sr-only">Data inicial:</label>
+                <input type="date" class="form-control" id="inputDate" name="date" value="{{ request.GET.date }}">
+            </div>
+            <div class="form-group mr-1">
+                <label for="inputEndDate" class="sr-only">Data Final:</label>
+                <input type="date" class="form-control" id="inputEndDate" name="end_date" value="{{ request.GET.end_date }}">
+            </div>
+            <button type="submit" class="btn btn-primary">Filtrar</button>
+        </form>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Produtos</th>
+                        <th>Data de venda</th>
+                        <th>Valor total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for carrinho in carrinhos %}
+                    <tr>
+                        <th scope="row">{{ carrinho.id }}</th>
+                        <td>
+                            {% if carrinho.produtos.all %}
+                                {{ carrinho.produtos.all|join:', ' }}
+                            {% endif %}
+                        </td>
+                        <td>{{ carrinho.data_compra }}</td>
+                        <td>{{ carrinho.valor_total }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="d-flex justify-content-between align-items-center pagination">
+                <span class="step-links">
+                    {% if carrinhos.has_previous %}
+                        <a href="?page=1&date={{ request.GET.date }}">&laquo; Primeiro</a>
+                        <a href="?page={{ carrinhos.previous_page_number }}&date={{ request.GET.date }}">Voltar</a>
+                    {% endif %}
+
+                    <span class="current">
+                        Página {{ carrinhos.number }} de {{ carrinhos.paginator.num_pages }}.
+                    </span>
+
+                    {% if carrinhos.has_next %}
+                        <a href="?page={{ carrinhos.next_page_number }}&date={{ request.GET.date }}">Próximo</a>
+                        <a href="?page={{ carrinhos.paginator.num_pages }}&date={{ request.GET.date }}">Ultimo &raquo;</a>
+                    {% endif %}
+                </span>
+                <h4 class="mt-1">Valor Total: R$ {{total_value}}</h4>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
