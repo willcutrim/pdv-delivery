@@ -21,14 +21,10 @@ class Carrinho(models.Model):
     data_compra = models.DateTimeField(auto_now_add=True)
 
 
-    # def calcular_valor_total(self):
-    #     self.valor_total = sum(item.preco_total() for item in self.itens.all())
-    #     self.save()
-
-
-    # def limpar_carrinho(self):
-    #     self.itens.all().delete()
-    #     self.calcular_valor_total()
+    def calcular_valor_total(self):
+        # Calcular o valor total com base nos produtos associados
+        self.valor_total = sum(produto.preco_do_produto for produto in self.produtos.all())
+        return self.valor_total
 
     def __str__(self):
         return f'Carrinho #{self.produtos}'

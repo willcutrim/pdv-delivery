@@ -8,5 +8,6 @@ urlpatterns = [
     path('caixa', views.CaixaView.as_view(), name="caixa"),
     path('lista_de_produtos', views.ListaProdutosView.as_view(), name="lista-de-produtos"),
     path('api/salvar-pedido/', views.CarrinhoListCreateView.as_view(), name='salvar-pedido'),
+    path('api/get-price/', views.get_product_price, name='get_product_price'),
 
 ]

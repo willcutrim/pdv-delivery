@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'pdv',
     'rest_framework',
     'bootstrap5',
+
 ]
 
 MIDDLEWARE = [
@@ -53,6 +54,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 'corsheaders.middleware.CorsMiddleware',
+    
 ]
 
 ROOT_URLCONF = 'gereciamentoDelivery.urls'

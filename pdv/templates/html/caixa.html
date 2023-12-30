@@ -4,6 +4,209 @@
 
 
 {% block content %}
-    >
+<h1 class="alert d-flex justify-content-center bg-gradient-x-primary white media-body">Caixa</h1>
+<form id="product-form" method="post">
+    {% csrf_token %}
+    <div id="product-inputs">
+        <div class="row mb-1">
+            <div class="col">
+                <select class="select2 form-control" aria-label="Default select example" id="product-name">
+                    <option value="" id="product-name" selected>---------</option>    
+                    {% for produto in produtos %}
+                        <option value="{{ produto.pk }}" >{{ produto.nome_produto }}</option>    
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col">
+                <input class="form-control" type="number" step="0.01" placeholder="Valor do produto" id="product-value" required>
+            </div>
+            <div class="col">
+                <input class="form-control" type="number" step="1" value="1" placeholder="Quantidade" id="product-quantity" required>
+            </div>
+            <div class="col">
+                <button class="btn btn-success" type="button" id="add-product">
+                    <i class="icon-plus"></i> Adicionar Produto
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        
+        <div class="card-body">
+            <div id="product-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Produto</th>
+                            <th>Valor</th>
+                            <th>Quantidade</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="product-table-body">
+                        <!-- Table rows will be added here dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="d-flex justify-content-between" id="total-value">
+        <button class="btn btn-primary" type="button" id="submit-form">Fechar pedido</button>
+        <div class="d-flex align-items-center badge rounded-pill bg-success">
+            <span>Valor Total: R$ 0.00</span>
+        </div>
+    </div>
+</form>
 
+
+<script src="{% static 'jquery/jquery-3.6.0.min.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="sweetalert2.all.min.js"></script>
+<script>
+    
+    $(document).ready(function() {
+        var count = 1;
+        var quantidadeTotal = 0; 
+        function updateTotal() {
+            var total = 0;
+            $('#product-table-body tr').each(function() {
+                var valorProduto = parseFloat($(this).find('.valor-compra').text() || 0);
+                var quantidadeProduto = parseFloat($(this).find('td:nth-child(3)').text() || 1);
+                total += valorProduto * quantidadeProduto;
+            });
+    
+            $('#total-value .badge').text('Valor Total: R$ ' + total.toFixed(2));
+            quantidadeTotal = total;
+            return total;
+        }
+    
+        $(document).on('input', '.valor, .qt', function() {
+            var totalValue = updateTotal();
+        });
+    
+        function addTableRow(product, value, quantity) {
+            var uniqueId = Date.now();
+
+            var newRow = `
+                <tr id="${uniqueId}">
+                    <td>${product}</td>
+                    <td class="valor-compra">${value}</td>
+                    <td>${quantity}</td>
+                    <td><button class="btn btn-danger remove-product" data-rowid="${uniqueId}" type="button"><i class="icon-trash"></i></button></td>
+                </tr>
+            `;
+
+            $('#product-table-body').append(newRow);
+            updateTotal();
+            
+        }
+    
+        $(document).on('click', '.remove-product', function() {
+            var rowId = $(this).data('rowid');
+            $('#' + rowId).remove();
+            updateTotal();
+        });
+    
+        $('#add-product').click(function() {
+            var productName = $('#product-name').val();
+            var productValue = parseFloat($('#product-value').val());
+            var productQuantity = parseInt($('#product-quantity').val());
+    
+            if (isNaN(productValue) || isNaN(productQuantity) || productName === '') {
+                return; // Sair se a entrada for inválida
+            }
+    
+            addTableRow(productName, productValue.toFixed(2), productQuantity);
+            updateTotal();
+    
+            // Limpar campos de entrada
+            $('#product-name').val('');
+            $('#product-value').val('');
+            $('#product-quantity').val('1');
+        });
+    });
+
+    function getCSRFToken(){
+        const cookieValue = document.cookie.split(';').find(row => row.startsWith('csrftoken=')).split('=')[1];
+        return cookieValue
+    }
+
+    $('#submit-form').click(function() {
+        var dataToSend = {
+            produtos: [],
+        };
+    
+        $('#product-table-body tr').each(function() {
+            var produto = $(this).find('td:eq(0)').text();
+            dataToSend.produtos.push(produto); 
+        });
+        
+        var apiUrl = 'api/salvar-pedido/';
+        
+        console.log(getCSRFToken())
+        fetch(apiUrl, {
+            headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCSRFToken()
+            },
+            method: 'POST',
+            body: JSON.stringify(dataToSend)
+          })
+            .then(response => {
+              if (!response.ok) {
+                throw new Error('Erro na solicitação');
+              }
+              return response.json();
+            })
+            .then(data => {
+              Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: 'Registros salvos com sucesso!',
+                timer: 2000,
+                showConfirmButton: false
+              }).then(function() {
+                //location.reload();
+              });
+          
+              document.getElementById('product-table-body').innerHTML = ''; // Limpar o conteúdo
+              // updateTotal();
+            })
+            .catch(error => {
+              Swal.fire({
+                icon: 'error',
+                title: 'Erro',
+                text: 'Ocorreu um erro ao salvar os registros.'
+              }).then(function() {
+                //location.reload();
+              });
+              // updateTotal();
+            });
+        
+    });
+    
+        $(document).ready(function() {
+            
+            $("#product-name").on("change", function() {
+                var selectedProduct = $(this).val();
+                
+                $.ajax({
+                    url: '/api/get-price/',
+                    type: 'GET',
+                    data: {
+                        product: selectedProduct
+                    },
+                    success: function(data) {
+                        $("#product-value").val(data.preco_do_produto);
+                    },
+                    error: function() {
+                        console.log("Error fetching product price");
+                    }
+                });
+            });
+        });
+        
+        
+    
+</script>
 {% endblock content %}

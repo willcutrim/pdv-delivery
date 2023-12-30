@@ -62,7 +62,7 @@
                         <a href="?page={{ carrinhos.paginator.num_pages }}&date={{ request.GET.date }}">Ultimo &raquo;</a>
                     {% endif %}
                 </span>
-                <h4 class="mt-1">Valor Total: R$ {{total_value}}</h4>
+                <h4 class="mt-1">Valor Total: R$ {% if total_value is None %}0,00{% else %}{{total_value}}{% endif %}</h4>
             </div>
         </div>
     </div>
