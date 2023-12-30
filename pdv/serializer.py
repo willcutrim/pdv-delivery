@@ -7,8 +7,8 @@ class ProdutosSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class CarrinhoSerializer(serializers.ModelSerializer):
-    produtos = ProdutosSerializer(many=True, read_only=True)
+    produtos = serializers.PrimaryKeyRelatedField(many=True, queryset=Produtos.objects.all())
 
     class Meta:
         model = Carrinho
-        fields = ['id', 'status_entrada', 'produtos', 'valor_total', 'data_compra']
+        fields = '__all__'

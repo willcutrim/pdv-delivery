@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .serializer import CarrinhoSerializer
 from django.db.models import Sum
-
+from rest_framework import generics
 
 class HomeView(TemplateView):
     template_name = "html/home.html"
@@ -97,19 +97,6 @@ class ListaProdutosView(TemplateView):
     
 
 
-class SalvarPedidoAPIView(APIView):
-
-    def get(self, request, *args, **kwargs):
-        carrinhos = Carrinho.objects.all()
-        serializer = CarrinhoSerializer(carrinhos, many=True)
-        return Response(serializer.data)
-
-    def post(self, request, *args, **kwargs):
-        data = request.data
-        serializer = CarrinhoSerializer(data=data)
-        print(data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class CarrinhoListCreateView(generics.ListCreateAPIView):
+    queryset = Carrinho.objects.all()
+    serializer_class = CarrinhoSerializer
