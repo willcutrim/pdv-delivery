@@ -40,7 +40,11 @@
                             <th class="{% if entrada_saida.tipo == 'saida' %}text-danger {% else %}text-success {% endif %} text-uppercase" scope="row">{{ entrada_saida.tipo }}</th>
                             <td>{{ entrada_saida.descricao}}</td>
                             <td>{{ entrada_saida.data }}</td>
-                            <td>{{ entrada_saida.valor }}</td>
+                            {% if entrada_saida.tipo == 'saida' %}
+                              <td class="text-danger">-{{ entrada_saida.valor }}</td>
+                            {% else %}
+                              <td class="text-success">+{{ entrada_saida.valor }}</td>
+                            {% endif %}
                             <td>
                                 <form action="{% url 'deletar-entrada-saida' entrada_saida.id %}" method="post" class="d-inline" id="deleteForm{{ entrada_saida.id }}">{% csrf_token %}
                                     <button class="btn btn-danger" type="button" onclick="confirmDelete({{ entrada_saida.id }})"><i class="icon-trash"></i></button>
