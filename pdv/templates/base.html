@@ -11,7 +11,7 @@
     
     <link rel="shortcut icon" type="image/x-icon" href="{% static 'app-assets/images/ico/favicon.ico' %}">
     
-    <link href="https://fonts.googleapis.com/css?family=Montserrat:300,300i,400,400i,500,500i%7COpen+Sans:300,300i,400,400i,600,600i,700,700i" rel="stylesheet">
+    <link href="{% static 'css/fonts.css' %}" rel="stylesheet">
 
     <!-- BEGIN: Vendor CSS-->
     <link rel="stylesheet" type="text/css" href="{% static 'app-assets/vendors/css/vendors.min.css' %}">
@@ -67,9 +67,9 @@
         <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
           <li class=" navigation-header"><span>Menus</span><i class=" feather icon-minus" data-toggle="tooltip" data-placement="right" data-original-title="General"></i>
           </li><hr>
-          <li class=" nav-item"><a href="#"><i class="feather icon-box"></i><span class="menu-title" data-i18n="Invoice">Lista de produtos</span></a>
+          <li class=" nav-item"><a href="{% url 'lista-de-produtos' %}"><i class="feather icon-box"></i><span class="menu-title" data-i18n="Invoice">Lista de produtos</span></a>
           </li>
-          <li class=" nav-item"><a href="#"><i class="feather icon-list"></i><span class="menu-title" data-i18n="Invoice">Relatório - Entrada e saída</span></a>
+          <li class=" nav-item"><a href="{% url 'relatorio-entrada-saida' %}"><i class="feather icon-list"></i><span class="menu-title" data-i18n="Invoice">Relatório - Entrada e saída</span></a>
           </li>
           
         </ul>

@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
 
 
@@ -8,7 +8,7 @@ class Produtos(models.Model):
     nome_produto = models.CharField(max_length=150)
     preco_do_produto = models.DecimalField(max_digits=10, decimal_places=2)
     descricao = models.TextField()
-
+    quantidade = models.PositiveIntegerField(default=1)
 
     def __str__(self) -> str:
         return self.nome_produto
@@ -17,17 +17,12 @@ class Produtos(models.Model):
 class Carrinho(models.Model):
     status_entrada = models.CharField(max_length=120, default='entrada')
     produtos = models.ManyToManyField(Produtos)
-    valor_total = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    valor_total = models.DecimalField(decimal_places=2, max_digits=10, default=0, blank=True)
     data_compra = models.DateTimeField(auto_now_add=True)
 
 
-    def calcular_valor_total(self):
-        # Calcular o valor total com base nos produtos associados
-        self.valor_total = sum(produto.preco_do_produto for produto in self.produtos.all())
-        return self.valor_total
-
     def __str__(self):
-        return f'Carrinho #{self.produtos}'
+        return f'Carrinho #{self.valor_total} - {self.data_compra}'
     
 
 class Saida(models.Model):
@@ -51,9 +46,10 @@ class Saida(models.Model):
 
 
 class RelatorioEntradaSaida(models.Model):
+    id_movimento = models.CharField(max_length=150)
     tipo = models.CharField(max_length=150)
     descricao = models.CharField(max_length=150)
-    valor = models.DecimalField(decimal_places=2, max_digits=10, default=0)
+    valor = models.DecimalField(decimal_places=2, max_digits=10)
     data = models.DateTimeField(auto_now_add=True)
 
     
@@ -79,8 +75,32 @@ def create_relatorio_entrada_saida_saida(sender, instance, created, **kwargs):
 def create_relatorio_entrada_saida(sender, instance, created, **kwargs):
     if created:
         RelatorioEntradaSaida.objects.create(
+            id_movimento=instance.id,
             tipo=instance.status_entrada,
-            descricao=instance.produtos,
+            descricao='Venda',
             valor=instance.valor_total,
             data=instance.data_compra
         )
+        
+
+@receiver(pre_delete, sender=RelatorioEntradaSaida)
+def delete_relatorio_entrada_saida(sender, instance, **kwargs):
+    try:
+        relatorio = Carrinho.objects.get(id=instance.id_movimento)
+        relatorio.delete()
+    except Carrinho.DoesNotExist:
+        pass
+    except Exception as e:
+        #
+        print(f"Erro ao excluir relatório: {e}")
+
+@receiver(pre_delete, sender=Carrinho)
+def delete_venda_entrada(sender, instance, **kwargs):
+    try:
+        relatorio = RelatorioEntradaSaida.objects.get(id_movimento=instance.id)
+        relatorio.delete()
+    except RelatorioEntradaSaida.DoesNotExist:
+        pass
+    except Exception as e:
+        #
+        print(f"Erro ao excluir relatório: {e}")

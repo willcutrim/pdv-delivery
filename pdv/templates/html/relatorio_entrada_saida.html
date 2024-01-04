@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Relatório - Entrada e saída{% endblock %}
+
+
+{% block content %}
+    <div class="d-flex justify-content-end"> 
+        <a href="{% url 'cadastro-saida' %}" type="button" class="btn btn-primary mb-1">Cadastrar saída</a>
+    </div>
+    <div class="card">
+        <div class="d-flex justify-content-between card-header ">
+            <h4 class="card-title">Relatório - Entrada e saída</h4>
+            <form method="get" class="form-inline">
+                <div class="form-group mr-1">
+                    <label for="inputDate" class="sr-only">Data inicial:</label>
+                    <input type="date" class="form-control" id="inputDate" name="data_inicial" value="{{ request.GET.data_inicial }}">
+                </div>
+                <div class="form-group mr-1">
+                    <label for="inputEndDate" class="sr-only">Data Final:</label>
+                    <input type="date" class="form-control" id="inputEndDate" name="data_final" value="{{ request.GET.data_final }}">
+                </div>
+                <button type="submit" class="btn btn-primary">Filtrar</button>
+            </form>            
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped mb-0">
+                    <thead>
+                        <tr>
+                            <th>TIPO</th>
+                            <th>Descrição</th>
+                            <th>Data da movimentação</th>
+                            <th>Valor</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for entrada_saida in logs %}
+                        <tr>
+                            <th class="{% if entrada_saida.tipo == 'saida' %}text-danger {% else %}text-success {% endif %} text-uppercase" scope="row">{{ entrada_saida.tipo }}</th>
+                            <td>{{ entrada_saida.descricao}}</td>
+                            <td>{{ entrada_saida.data }}</td>
+                            <td>{{ entrada_saida.valor }}</td>
+                            <td>
+                                <form action="{% url 'deletar-entrada-saida' entrada_saida.id %}" method="post" class="d-inline" id="deleteForm{{ entrada_saida.id }}">{% csrf_token %}
+                                    <button class="btn btn-danger" type="button" onclick="confirmDelete({{ entrada_saida.id }})"><i class="icon-trash"></i></button>
+                                </form>
+                            </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <div class="d-flex justify-content-between align-items-center pagination">
+                    <span class="step-links">
+                        {% if logs.has_previous %}
+                            <a href="?page=1&date={{ request.GET.date }}">&laquo; Primeiro</a>
+                            <a href="?page={{ logs.previous_page_number }}&date={{ request.GET.date }}">Voltar</a>
+                        {% endif %}
+
+                        <span class="current">
+                            Página {{ logs.number }} de {{ logs.paginator.num_pages }}.
+                        </span>
+
+                        {% if logs.has_next %}
+                            <a href="?page={{ logs.next_page_number }}&date={{ request.GET.date }}">Próximo</a>
+                            <a href="?page={{ logs.paginator.num_pages }}&date={{ request.GET.date }}">Ultimo &raquo;</a>
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row grouped-multiple-statistics-card">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-lg-4 col-xl-4 col-sm-6 col-12">
+                  <div class="d-flex align-items-start mb-sm-1 mb-xl-0 border-right-blue-grey border-right-lighten-5">
+                    <span class="card-icon primary d-flex justify-content-center mr-3">
+                      <i class="icon p-1 icon-bar-chart customize-icon font-large-2 p-1 success"></i>
+                    </span>
+                    <div class="stats-amount mr-3">
+                        <h3 class="heading-text text-bold-600 text-success">
+                            {% if total_entradas != 0%}
+                                R$ +{{total_entradas}}
+                            {% else %}
+                                R$ 0
+                            {% endif %}
+                        </h3>
+                      <p class="sub-heading">Valor total</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-4 col-xl-4 col-sm-6 col-12">
+                  <div class="d-flex align-items-start mb-sm-1 mb-xl-0 border-right-blue-grey border-right-lighten-5">
+                    <span class="card-icon blue-grey.bg-darken-2 d-flex justify-content-center mr-3">
+                      <i class="icon p-1 icon-calendar customize-icon font-large-2 p-1"></i>
+                    </span>
+                    <div class="stats-amount mr-3">
+                        <h3 class="heading-text text-bold-600 text-blue-grey.bg-darken-2">
+                            {% if total_entradas_mensal != 0%}
+                                R$ +{{total_entradas_mensal}}
+                            {% else %}
+                                R$ 0
+                            {% endif %}
+                        </h3>
+                      <p class="sub-heading">Valor mensal</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-4 col-xl-4 col-sm-6 col-12">
+                  <div class="d-flex align-items-start">
+                    <span class="card-icon warning d-flex justify-content-center mr-3">
+                      <i class="icon p-1 icon-basket-loaded customize-icon font-large-2 p-1 info"></i>
+                    </span>
+                    <div class="stats-amount mr-3">
+                      <h3 class="heading-text text-bold-600 text-info ">{{qt_entradas|length}}</h3>
+                      <p class="sub-heading">Total de vendas</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row grouped-multiple-statistics-card">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-lg-4 col-xl-4 col-sm-6 col-12">
+                  <div class="d-flex align-items-start mb-sm-1 mb-xl-0 border-right-blue-grey border-right-lighten-5">
+                    <span class="card-icon primary d-flex justify-content-center mr-3">
+                      <i class="icon p-1 icon-bar-chart customize-icon font-large-2 p-1 danger"></i>
+                    </span>
+                    <div class="stats-amount mr-3">
+                        <h3 class="heading-text text-bold-600 text-danger">
+                            {% if total_saidas != 0%}
+                                R$ -{{total_saidas}}
+                            {% else %}
+                                R$ 0
+                            {% endif %}
+                        </h3>
+                      <p class="sub-heading">Total saída</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-4 col-xl-4 col-sm-6 col-12">
+                  <div class="d-flex align-items-start mb-sm-1 mb-xl-0 border-right-blue-grey border-right-lighten-5">
+                    <span class="card-icon bg-red.bg-accent-3 d-flex justify-content-center mr-3">
+                      <i class="icon p-1 icon-calendar customize-icon font-large-2 p-1 danger"></i>
+                    </span>
+                    <div class="stats-amount mr-3">
+                        <h3 class="heading-text text-bold-600 text-bg-red.bg-accent-3 danger">
+                            {% if total_saidas_mensal != 0%}
+                                R$ -{{total_saidas_mensal}}
+                            {% else %}
+                                R$ 0
+                            {% endif %}
+                        </h3>
+                      <p class="sub-heading">Saída mensal</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-4 col-xl-4 col-sm-6 col-12">
+                    <div class="d-flex align-items-start mb-sm-1 mb-xl-0 border-right-blue-grey border-right-lighten-5">
+                      <span class="card-icon bg-red.bg-accent-3 d-flex justify-content-center mr-3">
+                        <i class="icon p-1 icon-graph customize-icon font-large-2 p-1 danger"></i>
+                      </span>
+                      <div class="stats-amount mr-3">
+                        <h3 class="heading-text text-bold-600 text-bg-red.bg-accent-3 danger">{{qt_saidas|length}}</h3>
+                        <p class="sub-heading">Total de saídas</p>
+                      </div>
+                    </div>
+                  </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    <script src="{% static 'js/sweetalert2.all.min.js'%}"></script>
+    <script src="{% static 'js/sweetalert2@11.js' %}"></script>
+    <script src="{% static "jquery/jquery.min.js"%}"></script>
+    <script>
+        function confirmDelete(relatorioId) {
+            Swal.fire({
+                title: 'Tem certeza?',
+                text: 'Você não poderá recuperar este registro!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sim, exclua-o!',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // If confirmed, submit the corresponding form
+                    document.getElementById('deleteForm' + relatorioId).submit();
+                }
+            });
+        }
+    </script>
+{% endblock content %}

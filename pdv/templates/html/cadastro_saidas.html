@@ -1,21 +1,19 @@
 {% extends "base.html" %}
-{% load bootstrap5 %}
 {% load static %}
-{% block title %}Cadastro de produtos{% endblock %}
+{% block title %}Cadastar de saída{% endblock %}
 
 
 {% block content %}
 <div class="container-fluid">
     <div class="card shadow">
         <div class="card-header">
-            <h5 class="font-weight-bold">CADASTRAR PRODUTOS</h5>
+            <h5 class="font-weight-bold">CADASTRAR SAÍDAS</h5>
         </div>
         <div class="card-body">
-            <form method="post" id="product-form">{% csrf_token %}
-                {{ form }}
-                {% bootstrap_button button_type="submit" content="Cadastrar"%}
-                <a  href="{% url 'lista-de-produtos' %}" type="button" class="btn btn-light btn-min-width mr-1 mb-1 mt-1 white">
-                    <i class="icon-list white mr-1"></i>Ver produtos</a>
+            <form method="post" id="product-form"> {% csrf_token %}
+                {{form}}
+                <button type="submit" class="btn btn-secondary btn-min-width mr-1 mb-1 mt-1">Cadastrar</button>
+                <a href="{% url 'relatorio-entrada-saida' %}" type="button" class="btn btn-primary">Voltar</a>
             </form>
         </div>
     </div>
@@ -23,6 +21,7 @@
 <script src="{% static "jquery/jquery-3.6.0.min.js"%}"></script>
 <script src="{% static "js/sweetalert2@11.js"%}"></script>
 <script src="{% static "js/sweetalert2.all.min.js"%}"></script>
+
 <script>
     $(document).ready(function () {
         $('#product-form').submit(function (e) {
@@ -30,15 +29,14 @@
 
             $.ajax({
                 type: 'POST',
-                url: '{% url "cadastrar-produtos" %}',
+                url: '{% url "cadastro-saida" %}',
                 data: $('#product-form').serialize(),
                 success: function (response) {
-                    
                     if (response.success) {
                         Swal.fire({
                             icon: 'success',
                             title: 'Success',
-                            text: 'Produto cadastrado com sucesso!',
+                            text: 'Despesa cadastrada com sucesso!',
                             timer: 2000,
                             showConfirmButton: false,
                         }).then(function () {

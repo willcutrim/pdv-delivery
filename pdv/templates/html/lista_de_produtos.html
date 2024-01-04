@@ -5,8 +5,11 @@
 
 {% block content %}
 <div class="card">
-    <div class="card-header">
+    <div class="card-header d-flex justify-content-between align-items-center">
         <h4 class="card-title">Lista de produtos</h4>
+        <a href="{% url 'cadastrar-produtos' %}" type="button" class="btn btn-secondary btn-min-width ">
+            <i class="icon-plus white mr-1"></i> Cadastrar produtos
+        </a>
     </div>
     <div class="card-body">
         <div class="table-responsive">
@@ -17,6 +20,7 @@
                         <th>Nome do produto</th>
                         <th>Preço</th>
                         <th>Descrição</th>
+                        <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -26,6 +30,15 @@
                             <td>{{ produto.nome_produto }}</td>
                             <td>{{ produto.preco_do_produto }}</td>
                             <td>{{ produto.descricao }}</td>
+                            <td>
+                                <a href="{% url 'editar-produto' pk=produto.id %}" class="btn btn-warning">
+                                    <i class="icon-pencil"></i>
+                                </a>
+                                
+                                <form action="{% url 'deletar-produto' produto.id %}" method="post" class="d-inline" id="deleteForm{{ produto.id }}">{% csrf_token %}
+                                    <button class="btn btn-danger" type="button" onclick="confirmDelete({{ produto.id }})"><i class="icon-trash"></i></button>
+                                </form>
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -48,14 +61,32 @@
                     {% endif %}
                 </span>
             </div>
-
-            <a href="{% url 'cadastrar-produtos' %}" type="button" class="btn btn-secondary btn-min-width mr-1 mb-1 mt-1">
-                <i class="icon-plus white mr-1"></i> Cadastrar produtos
-            </a>
         </div>
     </div>
 </div>
 
+<script src="{% static 'js/sweetalert2.all.min.js'%}"></script>
+<script src="{% static 'js/sweetalert2@11.js' %}"></script>
+<script src="{% static "jquery/jquery.min.js"%}"></script>
 
+
+<script>
+    function confirmDelete(produtoId) {
+        Swal.fire({
+            title: 'Tem certeza?',
+            text: 'Você não poderá recuperar este produto!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sim, exclua-o!',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // If confirmed, submit the corresponding form
+                document.getElementById('deleteForm' + produtoId).submit();
+            }
+        });
+    }
+</script>
 {% endblock content %}
 

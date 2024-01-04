@@ -28,19 +28,25 @@
                         <th>Produtos</th>
                         <th>Data de venda</th>
                         <th>Valor total</th>
+                        <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for carrinho in carrinhos %}
-                    <tr>
-                        <th scope="row">{{ carrinho.id }}</th>
-                        <td>
-                            {% if carrinho.produtos.all %}
-                                {{ carrinho.produtos.all|join:', ' }}
-                            {% endif %}
-                        </td>
-                        <td>{{ carrinho.data_compra }}</td>
-                        <td>{{ carrinho.valor_total }}</td>
+                        <tr>
+                            <th scope="row">{{ carrinho.id }}</th>
+                            <td>
+                                {% if carrinho.produtos.all %}
+                                    {{ carrinho.produtos.all|join:', ' }}
+                                {% endif %}
+                            </td>
+                            <td>{{ carrinho.data_compra }}</td>
+                            <td>{{ carrinho.valor_total }}</td>
+                            <td>
+                                <form action="{% url 'deletar-venda' carrinho.id %}" method="post" class="d-inline" id="deleteForm{{ carrinho.id }}">{% csrf_token %}
+                                    <button class="btn btn-danger" type="button" onclick="confirmDelete({{ carrinho.id }})"><i class="icon-trash"></i></button>
+                                </form>
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -68,4 +74,25 @@
     </div>
 </div>
 
+<script src="{% static 'js/sweetalert2.all.min.js'%}"></script>
+<script src="{% static 'js/sweetalert2@11.js' %}"></script>
+<script src="{% static "jquery/jquery.min.js"%}"></script>
+<script>
+    function confirmDelete(vendaId) {
+        Swal.fire({
+            title: 'Tem certeza?',
+            text: 'Você não poderá recuperar este registro!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sim, exclua-o!',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // If confirmed, submit the corresponding form
+                document.getElementById('deleteForm' + vendaId).submit();
+            }
+        });
+    }
+</script>
 {% endblock content %}

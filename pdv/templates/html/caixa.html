@@ -59,19 +59,19 @@
 </form>
 
 
-<script src="{% static 'jquery/jquery-3.6.0.min.js' %}"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="sweetalert2.all.min.js"></script>
+<script src="{% static 'js/sweetalert2.all.min.js'%}"></script>
+<script src="{% static 'js/sweetalert2@11.js' %}"></script>
+<script src="{% static "jquery/jquery-3.6.0.min.js"%}"></script>
 <script>
     
     $(document).ready(function() {
-        var count = 1;
-        var quantidadeTotal = 0; 
+        let quantidadeTotal = 0;
+    
         function updateTotal() {
-            var total = 0;
+            let total = 0;
             $('#product-table-body tr').each(function() {
-                var valorProduto = parseFloat($(this).find('.valor-compra').text() || 0);
-                var quantidadeProduto = parseFloat($(this).find('td:nth-child(3)').text() || 1);
+                const valorProduto = parseFloat($(this).find('.valor-compra').text()) || 0;
+                const quantidadeProduto = parseFloat($(this).find('td:nth-child(3)').text()) || 1;
                 total += valorProduto * quantidadeProduto;
             });
     
@@ -80,37 +80,33 @@
             return total;
         }
     
-        $(document).on('input', '.valor, .qt', function() {
-            var totalValue = updateTotal();
-        });
-    
         function addTableRow(product, value, quantity) {
-            var uniqueId = Date.now();
-
-            var newRow = `
-                <tr id="${uniqueId}">
-                    <td>${product}</td>
-                    <td class="valor-compra">${value}</td>
-                    <td>${quantity}</td>
-                    <td><button class="btn btn-danger remove-product" data-rowid="${uniqueId}" type="button"><i class="icon-trash"></i></button></td>
-                </tr>
-            `;
-
+            const uniqueId = Date.now();
+            const newRow = `<tr id="${uniqueId}">
+                                <td>${product}</td>
+                                <td class="valor-compra">${value}</td>
+                                <td>${quantity}</td>
+                                <td><button class="btn btn-danger remove-product" data-rowid="${uniqueId}" type="button"><i class="icon-trash"></i></button></td>
+                            </tr>`;
+    
             $('#product-table-body').append(newRow);
             updateTotal();
-            
         }
     
+        $(document).on('input', '.valor, .qt', function() {
+            const totalValue = updateTotal();
+        });
+    
         $(document).on('click', '.remove-product', function() {
-            var rowId = $(this).data('rowid');
+            const rowId = $(this).data('rowid');
             $('#' + rowId).remove();
             updateTotal();
         });
     
         $('#add-product').click(function() {
-            var productName = $('#product-name').val();
-            var productValue = parseFloat($('#product-value').val());
-            var productQuantity = parseInt($('#product-quantity').val());
+            const productName = $('#product-name').val();
+            const productValue = parseFloat($('#product-value').val());
+            const productQuantity = parseInt($('#product-quantity').val());
     
             if (isNaN(productValue) || isNaN(productQuantity) || productName === '') {
                 return; // Sair se a entrada for inválida
@@ -124,89 +120,94 @@
             $('#product-value').val('');
             $('#product-quantity').val('1');
         });
-    });
-
-    function getCSRFToken(){
-        const cookieValue = document.cookie.split(';').find(row => row.startsWith('csrftoken=')).split('=')[1];
-        return cookieValue
-    }
-
-    $('#submit-form').click(function() {
-        var dataToSend = {
-            produtos: [],
-        };
     
-        $('#product-table-body tr').each(function() {
-            var produto = $(this).find('td:eq(0)').text();
-            dataToSend.produtos.push(produto); 
-        });
-        
-        var apiUrl = 'api/salvar-pedido/';
-        
-        console.log(getCSRFToken())
-        fetch(apiUrl, {
-            headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCSRFToken()
-            },
-            method: 'POST',
-            body: JSON.stringify(dataToSend)
-          })
-            .then(response => {
-              if (!response.ok) {
-                throw new Error('Erro na solicitação');
-              }
-              return response.json();
-            })
-            .then(data => {
-              Swal.fire({
-                icon: 'success',
-                title: 'Success',
-                text: 'Registros salvos com sucesso!',
-                timer: 2000,
-                showConfirmButton: false
-              }).then(function() {
-                //location.reload();
-              });
-          
-              document.getElementById('product-table-body').innerHTML = ''; // Limpar o conteúdo
-              // updateTotal();
-            })
-            .catch(error => {
-              Swal.fire({
-                icon: 'error',
-                title: 'Erro',
-                text: 'Ocorreu um erro ao salvar os registros.'
-              }).then(function() {
-                //location.reload();
-              });
-              // updateTotal();
-            });
-        
-    });
+        $('#submit-form').click(function() {
+            const dataToSend = {
+                produtos: [],
+                quantidades: [],
+                valores: [],
+            };
     
-        $(document).ready(function() {
-            
-            $("#product-name").on("change", function() {
-                var selectedProduct = $(this).val();
+            $('#product-table-body tr').each(function() {
+                const produto = $(this).find('td:eq(0)').text();
+                var valor = parseFloat($(this).find('.valor-compra').text());
+                var quantidade = parseInt($(this).find('td:eq(2)').text());
                 
-                $.ajax({
-                    url: '/api/get-price/',
-                    type: 'GET',
-                    data: {
-                        product: selectedProduct
-                    },
-                    success: function(data) {
-                        $("#product-value").val(data.preco_do_produto);
-                    },
-                    error: function() {
-                        console.log("Error fetching product price");
+                dataToSend.produtos.push(produto);
+                dataToSend.valores.push(valor);
+                dataToSend.quantidades.push(quantidade);
+            });
+            
+           
+            var totalValueText = $('#total-value .badge').text();
+            var valor_total = parseFloat(totalValueText.replace('Valor Total: R$ ', ''));
+        
+            
+            dataToSend.valor_total = valor_total;
+
+            const apiUrl = 'api/salvar-pedido/';
+
+
+            fetch(apiUrl, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken()
+                },
+                method: 'POST',
+                body: JSON.stringify(dataToSend)
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erro na solicitação');
                     }
+                    return response.json();
+                })
+                .then(data => {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: 'Registros salvos com sucesso!',
+                        timer: 2000,
+                        showConfirmButton: false
+                    }).then(function() {
+                        document.getElementById('product-table-body').innerHTML = '';
+                        $('#total-value .badge').text('Valor Total: R$ 0.00');
+                    });
+    
+                })
+                .catch(error => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro',
+                        text: 'Ocorreu um erro ao salvar os registros.'
+                    });
                 });
+        });
+    
+        $("#product-name").on("change", function() {
+            const selectedProduct = $(this).val();
+    
+            $.ajax({
+                url: '/api/get-price/',
+                type: 'GET',
+                data: {
+                    product: selectedProduct
+                },
+                success: function(data) {
+                    $("#product-value").val(data.preco_do_produto);
+                },
+                error: function() {
+                    console.log("Error fetching product price");
+                }
             });
         });
-        
-        
+    });
+    
+    function getCSRFToken() {
+        const cookieValue = document.cookie.split(';').find(row => row.startsWith('csrftoken=')).split('=')[1];
+        return cookieValue;
+    }
+    
     
 </script>
 {% endblock content %}

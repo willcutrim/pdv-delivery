@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load bootstrap5 %}
+{% load static %}
+{% block title %}Editar produto - {{object.nome_produto}}{% endblock %}
+
+{% block content %}
+    <div class="container-fluid">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold">EDITAR PRODUTO - {{object.nome_produto}}</h6>
+            </div>
+            <div class="card-body">
+                <form method="post" action="{% url 'editar-produto' pk=object.pk %}">
+                    {% csrf_token %}
+                    {% bootstrap_form form %}
+                    {% bootstrap_button button_type="submit" content="Editar" %}
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
