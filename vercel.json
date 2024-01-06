@@ -1,13 +1,31 @@
 {
-    "builds": [{
-        "src": "gereciamentoDelivery/wsgi.py",
-        "use": "@vercel/python",
-        "config": { "maxLambdaSize": "15mb", "runtime": "python3.10" }
-    }],
-    "routes": [
-        {
-            "src": "/(.*)",
-            "dest": "gereciamentoDelivery/wsgi.py"
-        }
-    ]
+  "version": 2,
+  "builds": [
+    {
+      "src": "gereciamentoDelivery/wsgi.py",
+      "use": "@vercel/python",
+      "config": { "maxLambdaSize": "15mb", "runtime": "python3.10" },
+      "functions": {
+        "api/**/*.js": { "runtime": "python3.10" }
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "gereciamentoDelivery/wsgi.py"
+    }
+  ],
+  "env": {
+    "DJANGO_SETTINGS_MODULE": "gereciamentoDelivery.settings",
+    "DATABASE_URL": "sqlite:///:memory:"  // Use a URL SQLite de exemplo
+  },
+  "build": {
+    "env": {
+      "DEBUG": "false"
+    },
+    "scripts": {
+      "build": "python manage.py collectstatic --noinput && python manage.py makemigrations && python manage.py migrate"
+    }
+  }
 }
