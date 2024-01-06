@@ -18,7 +18,7 @@
   ],
   "env": {
     "DJANGO_SETTINGS_MODULE": "gereciamentoDelivery.settings",
-    "DATABASE_URL": "sqlite:///:memory:"  // Use a URL SQLite de exemplo
+    "DATABASE_URL": "sqlite:///:memory:"
   },
   "build": {
     "env": {
