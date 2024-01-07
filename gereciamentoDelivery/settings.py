@@ -76,7 +76,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'gereciamentoDelivery.wsgi.application'
+WSGI_APPLICATION = 'gereciamentoDelivery.wsgi.app'
 
 
 # Database
