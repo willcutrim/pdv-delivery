@@ -1,28 +1,12 @@
-{
-  "version": 2,
-  "builds": [
-    {
-      "src": "gereciamentoDelivery/wsgi.py",
-      "use": "@vercel/python",
-      "config": { "maxLambdaSize": "15mb", "runtime": "python3.10" },
-      "functions": {
-        "api/**/*.js": { "runtime": "python3.10" }
-      }
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "gereciamentoDelivery/wsgi.py"
-    }
-  ],
-  "env": {
-    "DJANGO_SETTINGS_MODULE": "gereciamentoDelivery.settings",
-    "DATABASE_URL": "sqlite:///:memory:"
-  },
-  "build": {
-    "env": {
-      "DEBUG": "false"
-    },
-  }
+ "builds": [{
+        "src": "gereciamentoDelivery/wsgi.py",
+        "use": "@vercel/python",
+        "config": { "maxLambdaSize": "15mb", "runtime": "python3.10" }
+    }],
+    "routes": [
+        {
+            "src": "/(.*)",
+            "dest": "gereciamentoDelivery/wsgi.py"
+        }
+    ]
 }
