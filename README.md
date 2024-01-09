@@ -2,7 +2,7 @@
 
 ## Descrição
 
-O SIMLES PDV é um sistema desenvolvido para atender às necessidades de pequenas empresas de forma simples e eficiente. Ele é projetado para ser executado localmente, proporcionando praticidade e autonomia para as empresas que buscam uma solução leve e fácil de usar.
+O SIMPLES PDV é um sistema desenvolvido para atender às necessidades de pequenas empresas de forma simples e eficiente. Ele é projetado para ser executado localmente, proporcionando praticidade e autonomia para as empresas que buscam uma solução leve e fácil de usar.
 
 ## Características Principais
 
