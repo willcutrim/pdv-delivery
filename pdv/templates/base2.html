@@ -48,37 +48,18 @@
   <body class="vertical-layout vertical-menu-modern 2-columns   fixed-navbar" data-open="click" data-menu="vertical-menu-modern" data-col="2-columns">
 
     <!-- BEGIN: Header-->
-    <nav class="header-navbar navbar-expand-lg navbar navbar-with-menu fixed-top navbar-semi-dark navbar-shadow">
+    <nav class="header-navbar navbar-expand-lg navbar navbar-with-menu fixed-top navbar-semi bg-purple navbar-shadow">
       <div class="navbar-wrapper">
         <div class="navbar-header">
           <ul class="nav navbar-nav flex-row">
-            <li class="nav-item mobile-menu d-lg-none mr-auto"><a class="nav-link nav-menu-main menu-toggle hidden-xs" href="#"><i class="feather icon-menu font-large-1"></i></a></li>
-            <li class="nav-item mr-auto"><a class="navbar-brand" href="{% url 'home'%}"><img class="brand-logo" alt="stack admin logo" src="{% static 'app-assets/images/logo/stack-logo-light.png' %}">
-                <h2 class="brand-text">W-sistemas</h2></a></li>
+            <li class="nav-item mr-auto"><a class="navbar-brand"><img class="brand-logo" alt="stack admin logo" src="{% static 'app-assets/images/logo/stack-logo-light.png' %}">
+                <h2 class="brand-text text-white">W-sistemas</h2></a></li>
           </ul>
         </div>
         
       </div>
     </nav>
-    <!-- END: Header-->
 
-
-    <!-- BEGIN: Main Menu-->
-    <div class="main-menu menu-fixed menu-dark menu-accordion menu-shadow" data-scroll-to-active="true">
-      <div class="main-menu-content">
-        <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
-          <li class="navigation-header text-center"><span>Menus</span><i class=" feather icon-minus" data-toggle="tooltip" data-placement="right" data-original-title="General"></i>
-          </li><hr>
-          <li class=" nav-item"><a href="{% url 'home' %}"><i class="feather icon-home"></i><span class="menu-title" data-i18n="Invoice">Home</span></a>
-          </li><hr>
-          <li class=" nav-item"><a href="{% url 'relatorio-entrada-saida' %}"><i class="feather icon-list"></i><span class="menu-title" data-i18n="Invoice">Relatório - Entrada e saída</span></a>
-          </li><hr>
-          <li class=" nav-item"><a href="{% url 'cadastro-saida' %}"><i class="feather icon-trending-down"></i><span class="menu-title" data-i18n="Invoice">Cadastrar saídas</span></a>
-          </li><hr>
-        </ul>
-      </div>
-    </div>
-    <!-- END: Main Menu-->
 
     <!-- BEGIN: Content-->
     <div class="app-content content">

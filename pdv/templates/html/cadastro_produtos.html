@@ -33,7 +33,6 @@
                 url: '{% url "cadastrar-produtos" %}',
                 data: $('#product-form').serialize(),
                 success: function (response) {
-                    
                     if (response.success) {
                         Swal.fire({
                             icon: 'success',
@@ -44,12 +43,33 @@
                         }).then(function () {
                             location.reload();
                         });
+                    } else if(response.erro){
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Atenção',
+                            text: response.erro,
+                            timer: 2000,
+                            showConfirmButton: false,
+                        })
                     }
                 },
-                error: function (error) {
-                    console.log(error);
+                error: function (xhr) {
+                    var errors = JSON.parse(xhr.responseText);
+            
+                    if (errors.erro) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Warning',
+                            text: errors.erro,
+                            timer: 2000,
+                            showConfirmButton: false,
+                        }).then(function () {
+                            // Handle error as needed
+                        });
+                    }
                 }
             });
+            
         });
     });
 </script>

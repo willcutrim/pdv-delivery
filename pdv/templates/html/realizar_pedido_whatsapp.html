@@ -1,0 +1,139 @@
+{% extends "base2.html" %}
+{% load bootstrap5 %}
+{% load static %}
+
+{% block title %}Realizar pedido{% endblock %}
+
+
+{% block content %}
+<div class="container-fluid">
+    <div class="card shadow">
+        <div class="card-header">
+            <h5 class="font-weight-bold">Monte seu açaí</h5>
+        </div>
+        <div class="card-body">
+            <div class="col">
+                <label>Tamanho do açaí:</label>
+                <select class="form-control" aria-label="Default select example" id="tamanhoAcai">
+                    <option value="300 ML">300 ML</option>
+                    <option value="400 ML">400 ML</option>
+                    <option value="500 ML">500 ML</option>
+                    <option value="600 ML">600 ML</option>
+                </select>
+                
+                <label>Caldas:</label>
+                <select class="select2 form-control"  multiple="multiple" aria-label="Default select example" id="caldas">
+                    <option value="Chocolate">Chocolate</option>
+                    <option value="Leite condensado">Leite condensado</option>
+                    <option value="Cobertura de Kiwi">Cobertura de Kiwi</option>
+                    <option value="Morango e nutela">Morango e nutela</option>
+                </select>
+                
+                <label>Cremes:</label>
+                <select class="select2 form-control" aria-label="Default select example"  multiple="multiple" id="creme">
+                       
+                    <option value="Creme de cupuaçi">Creme de cupuaçi</option>
+                    <option value="Creme de bacuri">Creme de bacuri</option>
+                </select>
+                <label>Frutas:</label>
+                <select class="select2 form-control" aria-label="Default select example"  multiple="multiple" id="fruta">
+                      
+                    <option value="Banana">Banana</option>
+                    <option value="Morango">Morango</option>
+                    <option value="Kiwi">Kiwi</option>
+                    <option value="Uva">Uva</option>
+                    <option value="Maçã">Maçã</option>
+                </select>
+                <label>Outros:</label>
+                <select class="select2 form-control" aria-label="Default select example"  multiple="multiple" id="outros">
+                       
+                    <option value="Granola">Granola</option>
+                    <option value="Ceral">Ceral</option>
+                    <option value="Mm's">Mm's</option>
+                    <option value="Flocos de arroz">Flocos de arroz</option>
+                    <option value="Paçoquinha">Paçoquinha</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="card-header">
+            <h5 class="font-weight-bold">Endereço</h5>
+        </div>
+        <div class="card-body">
+            <div class="col">
+                <label>Bairro:</label>
+                <input class="form-control" type="text" placeholder="Bairro" required id="bairro">
+
+            
+                <label>Rua:</label>
+                <input class="form-control" type="text" placeholder="Rua" required id="rua">
+
+            
+                <label>Nº da casa:</label>
+                <input class="col-3 form-control" type="text" placeholder="Nº da casa" required id="numeroDaCasa">
+
+            
+                <label>Complemento:</label>
+                    <input class="form-control" type="text" placeholder="Complemento" id="Complemento">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="d-flex justify-content-center">
+        
+        <button class="btn btn-success" type="button" id="add-product" onclick="gerarLinkWhatsApp()">
+            <i class="fa fa-whatsapp"></i> Enviar pedido no Whastsapp
+        </button>
+    </div>
+</div>
+<script src="{% static "jquery/jquery-3.6.0.min.js"%}"></script>
+<script src="{% static "js/sweetalert2@11.js"%}"></script>
+<script src="{% static "js/sweetalert2.all.min.js"%}"></script>
+<script src="{% static 'js/select2.min.js' %}"></script>
+<script>
+    $(document).ready(function() {
+        $('.select2').select2({
+            maximumSelectionLength: 2
+        });
+    });
+
+    
+
+
+    function gerarLinkWhatsApp() {
+        var numeroWhatsApp = '9981762868';
+
+        var tamanhoAcai = $("#tamanhoAcai").val();
+        var caldas = $("#caldas").val() || [];
+        var creme = $("#creme").val() || [];
+        var fruta = $("#fruta").val() || [];
+        var outros = $("#outros").val() || [];
+
+        var bairro = $("#bairro").val() || '-----';
+        var rua = $("#rua").val() || '-----';
+        var numeroDaCasa = $("#numeroDaCasa").val() || '-----';
+        var complemento = $("#Complemento").val() || '-----';
+
+        if (numeroWhatsApp && numeroWhatsApp.match(/^\d+$/)) {
+            var pedidos = [
+                `*Tamnaho Açaí:* ${tamanhoAcai || '-----'}`,
+                `*Frutas:* ${fruta.length > 0 ? fruta.join(", ") : '-----'}`,
+                `*Outros:* ${outros.length > 0 ? outros.join(", ") : '-----'}`,
+                `*Caldas:* ${caldas.length > 0 ? caldas.join(", ") : '-----'}\n`,
+                '=========================\n',
+                `*Bairro:* ${bairro}`,
+                `*Rua:* ${rua}`,
+                `*Numero da casa:* ${numeroDaCasa}`,
+                `*Complemento:* ${complemento}`
+            ];
+
+            var mensagem = pedidos.join("\n");
+            var url = 'whatsapp://send?phone=' + numeroWhatsApp + '&text=' + encodeURIComponent(mensagem);
+
+            window.location.href = url;
+        } else {
+            alert('Número de WhatsApp inválido. Por favor, insira um número válido.');
+        }
+    }
+</script>
+{% endblock content %}

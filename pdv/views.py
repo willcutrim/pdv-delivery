@@ -23,18 +23,29 @@ class HomeView(TemplateView):
 
 
 def cadastrar_produtos(request):
-
     if request.method == 'POST':
         form = ProdutosForm(request.POST)
         if form.is_valid():
-            form.save()
-            response_data = {'success': 'Produto cadastrado com sucesso!'}
+            nome_produto = form.cleaned_data['nome_produto']
+            produto = Produtos.objects.filter(nome_produto=nome_produto).first()
+
+            if produto is not None:
+                response_data = {'erro': 'Já existe um produto com esse nome!'}
+                
+            else:
+                form.save()
+                response_data = {'success': 'Produto cadastrado com sucesso!'}
+            print(response_data)
             return JsonResponse(response_data)
-        
+
+        else:
+           
+            errors = form.errors.as_json()
+            return JsonResponse({'erro': errors})
     else:
         form = ProdutosForm()
-    return render(request, 'html/cadastro_produtos.html', {'form': form})
 
+    return render(request, 'html/cadastro_produtos.html', {'form': form})
 
 
 class RelatorioDeVendasView(TemplateView):
@@ -132,7 +143,7 @@ def get_product_price(request):
     pk_product = request.GET.get('product')
 
     try:
-        product = Produtos.objects.get(pk=pk_product)
+        product = Produtos.objects.get(nome_produto=pk_product)
         price = product.preco_do_produto
         return JsonResponse({'preco_do_produto': price})
     except Produtos.DoesNotExist:
@@ -239,3 +250,8 @@ def deletar_produto(request, id):
         produto = get_object_or_404(Produtos, id=id)
         produto.delete()
         return redirect('lista-de-produtos')
+    
+
+def pedido_whatsapp(request):
+
+    return render(request, 'html/realizar_pedido_whatsapp.html')

@@ -13,7 +13,7 @@
                 <select class="select2 form-control" aria-label="Default select example" id="product-name">
                     <option value="" id="product-name" selected>---------</option>    
                     {% for produto in produtos %}
-                        <option value="{{ produto.pk }}" >{{ produto.nome_produto }}</option>    
+                        <option value="{{ produto.nome_produto }}" >{{ produto.nome_produto }}</option>    
                     {% endfor %}
                 </select>
             </div>
@@ -186,7 +186,7 @@
     
         $("#product-name").on("change", function() {
             const selectedProduct = $(this).val();
-    
+            console.log(selectedProduct)
             $.ajax({
                 url: '/api/get-price/',
                 type: 'GET',

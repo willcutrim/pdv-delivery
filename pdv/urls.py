@@ -18,5 +18,6 @@ urlpatterns = [
     path('deletar_produto/<int:id>', views.deletar_produto, name='deletar-produto'),
     path('produto/<int:pk>/update/', views.ProdutoUpdateView.as_view(), name='editar-produto'),
 
+    path('realizar_pedido_cliente', views.pedido_whatsapp, name='realizar-pedido-cliente'),
 
 ]
