@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Pedidos{% endblock %}
+
+
+{% block content %}
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h4 class="card-title">Lista de pedidos</h4>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Tamanho do copo</th>
+                        <th>Forma de pagamento</th>
+                        <th>Cliente</th>
+                        <th>Data do pedido</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pedido in pedidos %}
+                        <tr>
+                            <th scope="row">#{{ pedido.codigo_do_pedido|default:"-----" }}</th>
+                            <td>{{ pedido.tamanho_acai|default:"-----"  }}</td>
+                            <td>{{ pedido.forma_de_pagamento|default:"-----"  }}</td>
+                            <td>{{ pedido.nome|default:"-----"  }}</td>
+                            <td>{{ pedido.create|default:"-----"  }}</td>
+                            <td>
+                                <a href="" class="btn btn-warning">
+                                    <i class="icon-pencil"></i>
+                                </a>
+                                
+                                <form action="" method="post" class="d-inline" id="deleteForm{{ pedido.id }}">{% csrf_token %}
+                                    <button class="btn btn-danger" type="button" onclick="confirmDelete({{ pedido.id }})"><i class="icon-trash"></i></button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+           
+            <div class="pagination">
+                <span class="step-links">
+                    {% if pedidos.has_previous %}
+                        <a href="?page=1">&laquo; Primeiro</a>
+                        <a href="?page={{ pedidos.previous_page_number }}">Voltar</a>
+                    {% endif %}
+
+                    <span class="current">
+                        Página {{ pedidos.number }} de {{ pedidos.paginator.num_pages }}.
+                    </span>
+
+                    {% if pedidos.has_next %}
+                        <a href="?page={{ pedidos.next_page_number }}">Próximo</a>
+                        <a href="?page={{ pedidos.paginator.num_pages }}">Ultimo &raquo;</a>
+                    {% endif %}
+                </span>
+            </div> 
+            
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/sweetalert2.all.min.js'%}"></script>
+<script src="{% static 'js/sweetalert2@11.js' %}"></script>
+<script src="{% static "jquery/jquery.min.js"%}"></script>
+
+
+<script>
+    function confirmDelete(produtoId) {
+        Swal.fire({
+            title: 'Tem certeza?',
+            text: 'Você não poderá recuperar este produto!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sim, exclua-o!',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // If confirmed, submit the corresponding form
+                document.getElementById('deleteForm' + produtoId).submit();
+            }
+        });
+    }
+</script>
+{% endblock content %}
+

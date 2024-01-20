@@ -1,5 +1,5 @@
 from django import forms
-from .models import Produtos, Saida
+from .models import Produtos, Saida, Pedido
 
 
 class ProdutosForm(forms.ModelForm):
@@ -43,3 +43,9 @@ class SaidaForm(forms.ModelForm):
             label='Valor da despesa',
             widget=forms.NumberInput(attrs={'class': 'form-control'}),
         )
+
+class FormPedido(forms.ModelForm):
+
+    class Meta:
+        model = Pedido
+        fields = '__all__'

@@ -59,6 +59,54 @@ class RelatorioEntradaSaida(models.Model):
     def __str__(self):
         return f"{self.tipo} - {self.data.strftime('%d/%m/%Y')}"
 
+class Acai(models.Model):
+    tamaho_do_acai = models.CharField(max_length=255, blank=True, null=True)
+
+
+    def __str__(self):
+        return self.tamaho_do_acai
+class Caldas(models.Model):
+    nome = models.CharField(max_length=255, blank=True, null=True)
+
+    def __str__(self):
+        return self.nome
+    
+class Cremes(models.Model):
+    nome = models.CharField(max_length=255, blank=True, null=True)
+
+
+    def __str__(self):
+        return self.nome
+class Frutas(models.Model):
+    nome = models.CharField(max_length=255, blank=True, null=True)
+
+
+    def __str__(self):
+        return self.nome
+class Adicionais(models.Model):
+    nome = models.CharField(max_length=255, blank=True, null=True)
+
+    def __str__(self):
+        return self.nome
+class Pedido(models.Model):
+    codigo_do_pedido = models.CharField(max_length=10, unique=True)
+    tamanho_acai = models.CharField(max_length=255, blank=True, null=True)
+    caldas = models.ManyToManyField(Caldas, blank=True)
+    creme = models.ManyToManyField(Cremes, blank=True)
+    fruta = models.ManyToManyField(Frutas, blank=True)
+    adicionais = models.ManyToManyField(Adicionais, blank=True)
+    bairro = models.CharField(max_length=255)
+    rua = models.CharField(max_length=255)
+    numero_da_casa = models.CharField(max_length=255)
+    complemento = models.CharField(max_length=255)
+    nome = models.CharField(max_length=255)
+    forma_de_pagamento = models.CharField(max_length=255)
+    dinheiro_valor = models.CharField(max_length=255, blank=True, null=True)
+    create = models.DateTimeField(auto_now_add=True)
+
+
+    def __str__(self):
+        return f'Código do Pedido: {self.codigo_do_pedido}'
 
 @receiver(post_save, sender=Saida)
 def create_relatorio_entrada_saida_saida(sender, instance, created, **kwargs):

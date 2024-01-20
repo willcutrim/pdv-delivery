@@ -1,8 +1,8 @@
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic import TemplateView
-from .forms import ProdutosForm, SaidaForm
-from .models import Produtos, Carrinho, RelatorioEntradaSaida, Saida
+from .forms import ProdutosForm, SaidaForm, FormPedido
+from .models import Acai, Adicionais, Caldas, Cremes, Frutas, Produtos, Carrinho, RelatorioEntradaSaida, Saida, Pedido
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .serializer import CarrinhoSerializer
 from django.db.models import Sum
@@ -11,7 +11,7 @@ from rest_framework.views import APIView
 from rest_framework import status
 from django.views.generic.edit import UpdateView
 from django.utils import timezone
-
+import random
 
 
 
@@ -252,6 +252,77 @@ def deletar_produto(request, id):
         return redirect('lista-de-produtos')
     
 
-def pedido_whatsapp(request):
 
-    return render(request, 'html/realizar_pedido_whatsapp.html')
+def pedido_whatsapp(request):
+    
+    if request.method == 'POST':
+
+        tamanho_acai = request.POST.get('tamanho', '')
+        caldas = request.POST.getlist('caldas', [])
+        cremes = request.POST.getlist('creme', [])
+        frutas = request.POST.getlist('fruta', [])
+        adicionais = request.POST.getlist('adicionais', [])
+        bairro = request.POST.get('bairro', '')
+        rua = request.POST.get('rua', '')
+        numero_da_casa = request.POST.get('numero_da_casa', '')
+        complemento = request.POST.get('complemento', '')
+        nome = request.POST.get('nome', '')
+        forma_de_pagamento = request.POST.get('formaDePagamento', '')
+        dinheiro_valor = request.POST.get('dinheiro_valor', '')
+
+        codigo_do_pedido = gerar_codigo_unico()
+
+        pedido = Pedido(
+            codigo_do_pedido=codigo_do_pedido,
+            tamanho_acai=tamanho_acai,
+            bairro=bairro,
+            rua=rua,
+            numero_da_casa=numero_da_casa,
+            complemento=complemento,
+            nome=nome,
+            forma_de_pagamento=forma_de_pagamento,
+            dinheiro_valor=dinheiro_valor
+        )
+        
+        # Salvar o pedido
+        pedido.save()
+
+        pedido.caldas.set(Caldas.objects.filter(nome__in=caldas))
+        pedido.creme.set(Cremes.objects.filter(nome__in=cremes))
+        pedido.fruta.set(Frutas.objects.filter(nome__in=frutas))
+        pedido.adicionais.set(Adicionais.objects.filter(nome__in=adicionais))
+
+
+    context = {
+        'tamanho_acai': Acai.objects.all(), 
+        'caldas':  Caldas.objects.all(),
+        'cremes':  Cremes.objects.all(),
+        'frutas': Frutas.objects.all(),
+        'adicionais': Adicionais.objects.all(),
+    }
+    return render(request, 'html/realizar_pedido_whatsapp.html', context)
+
+
+
+
+def gerar_codigo_unico():
+    codigo = random.randint(10000, 99999)
+    while Pedido.objects.filter(codigo_do_pedido=codigo).exists():
+        codigo = random.randint(10000, 99999)
+    return codigo
+
+
+def pedidos_feitos(request):
+
+    pedidos = Pedido.objects.all()
+
+    paginator = Paginator(pedidos, 10)
+
+    page = request.GET.get('page')
+    try:
+        pedidos = paginator.page(page)
+    except PageNotAnInteger:
+        pedidos = paginator.page(1)
+    except EmptyPage:
+        pedidos = paginator.page(paginator.num_pages)
+    return render(request, 'html/pedidos_feitos.html', {'pedidos': pedidos})

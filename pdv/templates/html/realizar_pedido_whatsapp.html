@@ -8,121 +8,113 @@
 {% block content %}
 <div class="container-fluid">
     <div class="card shadow">
-        <div class="card-header">
-            <h5 class="font-weight-bold">Monte seu açaí:</h5>
-        </div>
-        <div class="card-body">
-            <div class="col">
-                <label>Tamanho do copo:</label>
-                <select class="form-control" aria-label="Default select example" id="tamanhoAcai">
-                    <option value="" selected>Selecione o tamanho do copo</option>
-                    <option value="300 ML">300 ML</option>
-                    <option value="400 ML">400 ML</option>
-                    <option value="500 ML">500 ML</option>
-                    <option value="POTÃO">POTÃO</option>
-                </select>
-
-                <label>Caldas:</label>
-                <select class="select2 form-control"  multiple="multiple" aria-label="Default select example" id="caldas">
-                    <option value="Chocolate">Chocolate</option>
-                    <option value="Leite condensado">Leite condensado</option>
-                    <option value="Cobertura de Kiwi">Cobertura de Kiwi</option>
-                    <option value="Morango e nutela">Morango</option>
-                    <option value="Nutella">Nutella</option>
-                </select>
-
-                <label>Cremes:</label>
-                <select class="select2 form-control" aria-label="Default select example"  multiple="multiple" id="creme">
-
-                    <option value="Creme de cupuaçu">Creme de cupuaçu</option>
-                    <option value="Creme de bacuri">Creme de bacuri</option>
-                    <option value="Creme ninho">Creme ninho</option>
-                </select>
-                <label>Frutas:</label>
-                <select class="select2 form-control" aria-label="Default select example"  multiple="multiple" id="fruta">
-
-                    <option value="Banana">Banana</option>
-                    <option value="Morango">Morango</option>
-                    <option value="Kiwi">Kiwi</option>
-                    <option value="Uva">Uva</option>
-                    <option value="Maçã">Maçã</option>
-                </select>
-                <label>Adicionais:</label>
-                <select class="select2 form-control" aria-label="Default select example"  multiple="multiple" id="outros">
-                    <option value="Amendoim">Amendoim</option>
-                    <option value="Leite em pó">Leite em pó</option>
-                    <option value="Granola">Granola</option>
-                    <option value="Cereal">Cereal</option>
-                    <option value="M&M's">M&M's</option>
-                    <option value="Flocos de arroz">Flocos de arroz</option>
-                    <option value="Flocos de tapioca">Flocos de tapioca</option>
-                    <option value="Paçoquinha">Paçoquinha</option>
-                    <option value="Choco power ball">Choco power ball</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="card-header">
-            <h5 class="font-weight-bold">Endereço:</h5>
-        </div>
-        <div class="card-body">
-            <div class="col">
-                <label>Bairro: *</label>
-                <input class="form-control" type="text" placeholder="Bairro" required id="bairro">
-
-
-                <label>Rua: *</label>
-                <input class="form-control" type="text" placeholder="Rua" required id="rua">
-
-
-                <label>Nº da casa: *</label>
-                <input class="col-3 form-control" type="text" placeholder="Nº da casa" required id="numeroDaCasa">
-
-
-                <label>Ponto de referência: *</label>
-                    <input class="form-control" type="text" placeholder="Ponto de referência *" id="Complemento">
-                </div>
-            </div>
+        <form method="post">
             <div class="card-header">
-                <h5 class="font-weight-bold">Info. do cliente e forma de pagamento:</h5>
+                <h5 class="font-weight-bold">Monte seu açaí:</h5>
             </div>
             <div class="card-body">
                 <div class="col">
-                    <label>Nome:</label>
-                        <input class="form-control" type="text" placeholder="Nome" id="nome">
-                    </div><br>
-                    <label class="font-weight-bold">Forma de pagamento:</label>
-                    <div class="row">
-                        <div class="col-6">
-                            <fieldset class="radio">
-                                <label>
-                                    <input type="radio" name="formaDePagamento" value="Pix" onclick="mostrarInput(this)">
-                                    Pix
-                                </label>
-                            </fieldset>
-                        </div>
-                        <div class="col-6">
-                            <fieldset class="radio">
-                                <label>
-                                    <input type="radio" name="formaDePagamento" value="Dinheiro" onclick="mostrarInput(this)">
-                                    Dinheiro
-                                </label>
-                            </fieldset>
-                        </div>
+                    {% csrf_token %}
+                    <label>Tamanho do copo:</label>
+                    <select class="form-control" aria-label="Default select example" id="tamanho" name="tamanho">
+                        <option value="" selected>Selecione o tamanho do copo</option>
+                        {% for acai in tamanho_acai %}
+                            <option value="{{acai.tamaho_do_acai}}">{{acai.tamaho_do_acai}}</option>
+                        {% endfor %}
+                    </select>
+
+                    <label>Caldas:</label>
+                    <select class="select2 form-control"  multiple="multiple" aria-label="Default select example" id="caldas" name="caldas">
+                        {% for calda in caldas %}
+                            <option value="{{calda.nome}}">{{calda.nome}}</option>
+                        {% endfor %}
+                    </select>
+
+                    <label>Cremes:</label>
+                    <select class="select2 form-control" aria-label="Default select example"  multiple="multiple" id="creme" name="creme">
+                        {% for creme in cremes %}
+                            <option value="{{creme.nome}}">{{creme.nome}}</option>
+                        {% endfor %}
+                    </select>
+
+                    <label>Frutas:</label>
+                    <select class="select2 form-control" aria-label="Default select example"  multiple="multiple" id="fruta" name="fruta">
+
+                        {% for fruta in frutas %}
+                            <option value="{{fruta.nome}}">{{fruta.nome}}</option>
+                        {% endfor %}
+                    </select>
+
+                    <label>Adicionais:</label>
+                    <select class="select2 form-control" aria-label="Default select example"  multiple="multiple" id="adicionais" name="adicionais">
+                        {% for adicional in adicionais %}
+                            <option value="{{adicional.nome}}">{{adicional.nome}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="card-header">
+                <h5 class="font-weight-bold">Endereço:</h5>
+            </div>
+            <div class="card-body">
+                <div class="col">
+                    <label>Bairro: *</label>
+                    <input class="form-control" type="text" placeholder="Bairro" required id="bairro" name="bairro">
+    
+    
+                    <label>Rua: *</label>
+                    <input class="form-control" type="text" placeholder="Rua" required id="rua" name="rua">
+    
+    
+                    <label>Nº da casa: *</label>
+                    <input class="col-3 form-control" type="text" placeholder="Nº da casa" required id="numeroDaCasa" name="numero_da_casa">
+    
+    
+                    <label>Ponto de referência: *</label>
+                        <input class="form-control" type="text" placeholder="Ponto de referência *" id="Complemento" name="complemento">
                     </div>
-                    <div id="inputDinheiro" style="display:none;">
-                        <label>Troco pra quanto?</label>
-                        <input class="form-control" type="text" placeholder="Troco pra quanto?" id="dinheiro" >
+                </div>
+                <div class="card-header">
+                    <h5 class="font-weight-bold">Info. do cliente e forma de pagamento:</h5>
+                </div>
+                <div class="card-body">
+                    <div class="col">
+                        <label>Nome:</label>
+                            <input class="form-control" type="text" placeholder="Nome" id="nome" name="nome">
+                        </div><br>
+                        <label class="font-weight-bold">Forma de pagamento:</label>
+                        <div class="row">
+                            <div class="col-6">
+                                <fieldset class="radio">
+                                    <label>
+                                        <input type="radio" name="formaDePagamento" value="Pix" onclick="mostrarInput(this)">
+                                        Pix
+                                    </label>
+                                </fieldset>
+                            </div>
+                            <div class="col-6">
+                                <fieldset class="radio">
+                                    <label>
+                                        <input type="radio" name="formaDePagamento" value="Dinheiro" onclick="mostrarInput(this)">
+                                        Dinheiro
+                                    </label>
+                                </fieldset>
+                            </div>
+                        </div>
+                        <div id="inputDinheiro" style="display:none;">
+                            <label>Troco pra quanto?</label>
+                            <input class="form-control" type="text" placeholder="Troco pra quanto?" id="dinheiro" name="dinheiro_valor">
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        </div>
-    </div>
-    <div class="d-flex justify-content-center">
-        <button class="btn btn-success" type="button" id="add-product" onclick="gerarLinkWhatsApp()">
-            <i class="fa fa-whatsapp"></i> Enviar pedido no Whastsapp
-        </button>
+            <div class="d-flex justify-content-center">
+                <button class="btn btn-success" type="submit" id="add-product" onclick="gerarLinkWhatsApp()">
+                    <i class="fa fa-whatsapp"></i> Enviar pedido no Whastsapp
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 <script src="{% static "jquery/jquery-3.6.0.min.js"%}"></script>
@@ -144,22 +136,22 @@
             inputDinheiro.style.display = 'none';
         }
     }
-
+    
     function gerarLinkWhatsApp() {
         var numeroWhatsApp = '9981762868';
 
-        var tamanhoAcai = $("#tamanhoAcai").val();
+        var tamanhoAcai = $("#tamanho").val();
         var caldas = $("#caldas").val() || [];
         var creme = $("#creme").val() || [];
         var fruta = $("#fruta").val() || [];
-        var outros = $("#outros").val() || [];
+        var outros = $("#adicionais").val() || [];
 
         var bairro = $("#bairro").val() || '-----';
         var rua = $("#rua").val() || '-----';
         var numeroDaCasa = $("#numeroDaCasa").val() || '-----';
         var complemento = $("#Complemento").val() || '-----';
 
-       
+        console.log(tamanhoAcai)
         var nome = $("#nome").val() || '-----';
         
         var formaDePagamento = $("input[name='formaDePagamento']:checked").val() || '-----';
@@ -186,6 +178,7 @@
                 pedidos.push(`Dinheiro: *R$ ${dinheiroValor}*`);
             }
 
+
             var mensagem = pedidos.join("\n");
             var url = 'whatsapp://send?phone=' + numeroWhatsApp + '&text=' + encodeURIComponent(mensagem);
 
@@ -194,5 +187,14 @@
             alert('Número de WhatsApp inválido. Por favor, insira um número válido.');
         }
     }
+
+    
+    function getCSRFToken() {
+        const cookieValue = document.cookie.split(';').find(row => row.startsWith('csrftoken=')).split('=')[1];
+        return cookieValue;
+    }
+    
+    
+
 </script>
 {% endblock content %}
