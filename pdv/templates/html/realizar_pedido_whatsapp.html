@@ -81,7 +81,7 @@
                 <div class="card-body">
                     <div class="col">
                         <label>Nome:</label>
-                            <input class="form-control" type="text" placeholder="Nome" id="nome" name="nome">
+                            <input class="form-control" type="text" placeholder="Nome" required id="nome" name="nome">
                         </div><br>
                         <label class="font-weight-bold">Forma de pagamento:</label>
                         <div class="row">
@@ -138,7 +138,7 @@
     }
     
     function gerarLinkWhatsApp() {
-        var numeroWhatsApp = '9981762868';
+        var numeroWhatsApp = '9985572142';
 
         var tamanhoAcai = $("#tamanho").val();
         var caldas = $("#caldas").val() || [];
@@ -151,40 +151,50 @@
         var numeroDaCasa = $("#numeroDaCasa").val() || '-----';
         var complemento = $("#Complemento").val() || '-----';
 
-        console.log(tamanhoAcai)
         var nome = $("#nome").val() || '-----';
         
         var formaDePagamento = $("input[name='formaDePagamento']:checked").val() || '-----';
         var dinheiroValor = $("#dinheiro").val() || '-----';
+        
+        console.log(bairro)
 
-        if (numeroWhatsApp && numeroWhatsApp.match(/^\d+$/)) {
-            var pedidos = [
-                '======== PEDIDO ========',
-                `Tamnaho Açaí: *${tamanhoAcai || '-----'}*`,
-                `Frutas: *${fruta.length > 0 ? fruta.join(", ") : '-----'}*`,
-                `Adicionais: *${outros.length > 0 ? outros.join(", ") : '-----'}*`,
-                `Caldas: *${caldas.length > 0 ? caldas.join(", ") : '-----'}*\n`,
-                '======== ENDEREÇO ========',
-                `Bairro: *${bairro}*`,
-                `Rua: *${rua}*`,
-                `Numero da casa: *${numeroDaCasa}*`,
-                `Complemento: *${complemento}*\n`,
-                '=== INFOR. DO CLIENTE E PAGAMENTO ===',
-                `Nome do cliente: *${nome}*`,
-                `Forma de pagamento: *${formaDePagamento}*`,
-            ];
-
-            if (formaDePagamento === 'Dinheiro') {
-                pedidos.push(`Dinheiro: *R$ ${dinheiroValor}*`);
-            }
-
-
-            var mensagem = pedidos.join("\n");
-            var url = 'whatsapp://send?phone=' + numeroWhatsApp + '&text=' + encodeURIComponent(mensagem);
-
-            window.location.href = url;
+        if (bairro === '-----' || rua === '-----' || numeroDaCasa === '-----'){
+            Swal.fire({
+                icon: 'warning',
+                title: 'ATENÇÃO!',
+                text: 'Preencha os campos de endereço corretamente.'
+            });
         } else {
-            alert('Número de WhatsApp inválido. Por favor, insira um número válido.');
+            if (numeroWhatsApp && numeroWhatsApp.match(/^\d+$/)) {
+                var pedidos = [
+                    '======== PEDIDO ========',
+                    `Tamnaho Açaí: *${tamanhoAcai || '-----'}*`,
+                    `Frutas: *${fruta.length > 0 ? fruta.join(", ") : '-----'}*`,
+                    `Adicionais: *${outros.length > 0 ? outros.join(", ") : '-----'}*`,
+                    `Caldas: *${caldas.length > 0 ? caldas.join(", ") : '-----'}*\n`,
+                    '======== ENDEREÇO ========',
+                    `Bairro: *${bairro}*`,
+                    `Rua: *${rua}*`,
+                    `Numero da casa: *${numeroDaCasa}*`,
+                    `Complemento: *${complemento}*\n`,
+                    '=== INFOR. DO CLIENTE E PAGAMENTO ===',
+                    `Nome do cliente: *${nome}*`,
+                    `Forma de pagamento: *${formaDePagamento}*`,
+                ];
+    
+                if (formaDePagamento === 'Dinheiro') {
+                    pedidos.push(`Dinheiro: *R$ ${dinheiroValor}*`);
+                }
+    
+    
+                var mensagem = pedidos.join("\n");
+                var url = 'whatsapp://send?phone=' + numeroWhatsApp + '&text=' + encodeURIComponent(mensagem);
+    
+                window.location.href = url;
+            } else {
+                alert('Número de WhatsApp inválido. Por favor, insira um número válido.');
+            }
+            
         }
     }
 

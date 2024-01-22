@@ -314,7 +314,7 @@ def gerar_codigo_unico():
 
 def pedidos_feitos(request):
 
-    pedidos = Pedido.objects.all()
+    pedidos = Pedido.objects.all().order_by('-create')
 
     paginator = Paginator(pedidos, 10)
 
@@ -326,3 +326,11 @@ def pedidos_feitos(request):
     except EmptyPage:
         pedidos = paginator.page(paginator.num_pages)
     return render(request, 'html/pedidos_feitos.html', {'pedidos': pedidos})
+
+
+def deletar_pedidos(request, id):
+
+    if request.method == 'POST':    
+        pedido = get_object_or_404(Pedido, id=id)
+        pedido.delete()
+        return redirect('pedidos-feitos')

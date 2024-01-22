@@ -30,11 +30,12 @@
                             <td>{{ pedido.nome|default:"-----"  }}</td>
                             <td>{{ pedido.create|default:"-----"  }}</td>
                             <td>
+                                
                                 <a href="" class="btn btn-warning">
                                     <i class="icon-pencil"></i>
                                 </a>
                                 
-                                <form action="" method="post" class="d-inline" id="deleteForm{{ pedido.id }}">{% csrf_token %}
+                                <form action="{% url 'deletar-pedido' pedido.pk%}" method="post" class="d-inline" id="deleteForm{{ pedido.id }}">{% csrf_token %}
                                     <button class="btn btn-danger" type="button" onclick="confirmDelete({{ pedido.id }})"><i class="icon-trash"></i></button>
                                 </form>
                             </td>

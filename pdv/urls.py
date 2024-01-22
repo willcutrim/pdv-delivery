@@ -20,5 +20,7 @@ urlpatterns = [
 
     path('realizar_pedido_cliente', views.pedido_whatsapp, name='realizar-pedido-cliente'),
 
-    path('pedidos-feitos', views.pedidos_feitos, name='pedidos-feitos')
+    path('pedidos-feitos', views.pedidos_feitos, name='pedidos-feitos'),
+
+    path('deletar-pedido/<int:id>', views.deletar_pedidos, name='deletar-pedido'),
 ]
