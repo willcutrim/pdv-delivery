@@ -314,10 +314,18 @@ def gerar_codigo_unico():
 
 def pedidos_feitos(request):
 
+    data_inicial_str = request.GET.get('data_inicial')
+    data_final_str = request.GET.get('data_final')
+    
     pedidos = Pedido.objects.all().order_by('-create')
 
-    paginator = Paginator(pedidos, 10)
 
+    if data_final_str:
+        pedidos = pedidos.filter(create__date__gte=data_inicial_str)
+    if data_final_str:
+        pedidos = pedidos.filter(create__date__lte=data_final_str)
+
+    paginator = Paginator(pedidos, 10)
     page = request.GET.get('page')
     try:
         pedidos = paginator.page(page)
@@ -325,7 +333,13 @@ def pedidos_feitos(request):
         pedidos = paginator.page(1)
     except EmptyPage:
         pedidos = paginator.page(paginator.num_pages)
-    return render(request, 'html/pedidos_feitos.html', {'pedidos': pedidos})
+
+    context = {
+        'pedidos': pedidos,
+        'data_inicial': data_inicial_str,
+        'data_final': data_final_str
+    }
+    return render(request, 'html/pedidos_feitos.html', context)
 
 
 def deletar_pedidos(request, id):
