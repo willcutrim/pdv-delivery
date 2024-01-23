@@ -24,29 +24,28 @@
                     </select>
 
                     <label>Caldas:</label>
-                    <select class="select2 form-control"  multiple="multiple" aria-label="Default select example" id="caldas" name="caldas">
+                    <select class="select2 form-control" multiple="multiple" aria-label="Default select example" id="caldas" name="caldas">
                         {% for calda in caldas %}
                             <option value="{{calda.nome}}">{{calda.nome}}</option>
                         {% endfor %}
                     </select>
 
                     <label>Cremes:</label>
-                    <select class="select2 form-control" aria-label="Default select example"  multiple="multiple" id="creme" name="creme">
+                    <select class="select2 form-control" aria-label="Default select example" multiple="multiple" id="creme" name="creme">
                         {% for creme in cremes %}
                             <option value="{{creme.nome}}">{{creme.nome}}</option>
                         {% endfor %}
                     </select>
 
                     <label>Frutas:</label>
-                    <select class="select2 form-control" aria-label="Default select example"  multiple="multiple" id="fruta" name="fruta">
-
+                    <select class="select2 form-control" aria-label="Default select example" multiple="multiple" id="fruta" name="fruta">
                         {% for fruta in frutas %}
                             <option value="{{fruta.nome}}">{{fruta.nome}}</option>
                         {% endfor %}
                     </select>
 
                     <label>Adicionais:</label>
-                    <select class="select2 form-control" aria-label="Default select example"  multiple="multiple" id="adicionais" name="adicionais">
+                    <select class="select2 form-control" aria-label="Default select example" multiple="multiple" id="adicionais" name="adicionais">
                         {% for adicional in adicionais %}
                             <option value="{{adicional.nome}}">{{adicional.nome}}</option>
                         {% endfor %}
@@ -117,7 +116,7 @@
             <div class="modal fade text-center" id="modal-pedido" tabindex="-1" role="dialog" aria-labelledby="myModalLabel8" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                   <div class="modal-content">
-                    <div class="modal-header bg-primary white">
+                    <div class="modal-header bg-purple white">
                       <h4 class="modal-title" id="myModalLabel8">Revise seu pedido!</h4>
                       <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -128,7 +127,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="submit" id="add-product" class="btn btn-outline-success" onclick="gerarLinkWhatsApp()">
-                            <i class="fa fa-whatsapp"></i> Salvar e Enviar
+                            <i class="fa fa-whatsapp"></i> Enviar
                         </button>
                     </div>
                   </div>
@@ -143,6 +142,7 @@
 <script src="{% static 'js/select2.min.js' %} "></script>
 <script src="{% static 'app-assets/js/scripts/modal/components-modal.min.js' %} "></script>
 <script>
+    
     $(document).ready(function() {
         $('.select2').select2();
     });
@@ -186,11 +186,18 @@
 
         if (bairro === '-----' || rua === '-----' || numeroDaCasa === '-----'){
             alertaInput()
-            console.log('paroiaosdioausdad')
         } else {
             $("#modal-pedido").modal('show');
 
             $('#body-modal').empty(); 
+
+            var valorExibido = tamanhoAcai === '300 ML' ? 12 :
+                  tamanhoAcai === '400 ML' ? 15 :
+                  tamanhoAcai === '500 ML' ? 18 :
+                  tamanhoAcai === 'Potão' ? 20 :
+                  'Valor não correspondente';
+
+            var total = valorExibido + 2;
             const newRow = `
                 <h6 class="text-left">Tamanho do copo:<strong> ${tamanhoAcai}</strong></h6>
                 <h6 class="text-left">Caldas:</h6>
@@ -216,6 +223,12 @@
                     <p>Rua: <strong>${rua}</strong></p>
                     <p>Nº: <strong>${numeroDaCasa}</strong></p>
                     <p>Ponto de referência: <strong>${complemento}</strong></p>
+                </div>
+                <hr>
+                <div class="text-left">
+                    Valor Açai: <strong>R$ ${valorExibido}</strong><br>
+                    Taxa de entrega: <strong>R$ +2</strong> <br>
+                    Total: <strong>R$ ${total}</strong>
                 </div>
             `;
     
@@ -287,7 +300,56 @@
         const cookieValue = document.cookie.split(';').find(row => row.startsWith('csrftoken=')).split('=')[1];
         return cookieValue;
     }
+
+
+    $(document).ready(function () {
+        $('.select2').select2();
     
+        $('#caldas, #creme, #fruta, #adicionais').on('change', function () {
+           
+            var totalItens = $('#caldas').val().length +
+                $('#creme').val().length +
+                $('#fruta').val().length +
+                $('#adicionais').val().length;
+            
+            if (totalItens >= 6) {
+                
+                $('.select2-selection__choice').addClass('select2-selection__choice--removable');
+            } else {
+                
+                $('.select2-selection__choice').removeClass('select2-selection__choice--removable');
+            }
+        });
+    
+        $('#caldas, #creme, #fruta, #adicionais').on('select2:open', function () {
+            var totalItens = $('#caldas').val().length +
+                $('#creme').val().length +
+                $('#fruta').val().length +
+                $('#adicionais').val().length;
+    
+            if (totalItens >= 6) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'ATENÇÃO!',
+                    text: 'Você atingiu o limite de itens adicionados!',
+                });
+            }
+        });
+    
+        $('.select2-selection__choice').on('click', function () {
+            var totalItens = $('#caldas').val().length +
+                $('#creme').val().length +
+                $('#fruta').val().length +
+                $('#adicionais').val().length;
+    
+            if (totalItens >= 6) {
+                $(this).remove();
+                $('#caldas, #creme, #fruta, #adicionais').val(null).trigger('change');
+            }
+        });
+    });
+    
+
     
 
 </script>
