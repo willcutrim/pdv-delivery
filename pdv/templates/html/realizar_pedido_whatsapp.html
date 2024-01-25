@@ -11,6 +11,7 @@
         <form method="post">
             <div class="card-header">
                 <h5 class="font-weight-bold">Monte seu açaí:</h5>
+                <p style="font-size: 12px; margin-bottom: -18px;">Você pode adicionar até 6 itens no açaí. Será cobrado +2 reais por adicional caso ultrapasse o limite.</p>
             </div>
             <div class="card-body">
                 <div class="col">
@@ -44,17 +45,52 @@
                         {% endfor %}
                     </select>
 
-                    <label>Adicionais:</label>
-                    <select class="select2 form-control" aria-label="Default select example" multiple="multiple" id="adicionais" name="adicionais">
+                    <label>Outros:</label>
+                    <select class="select2 form-control" aria-label="Default select example" multiple="multiple" id="outros" name="outros">
                         {% for adicional in adicionais %}
                             <option value="{{adicional.nome}}">{{adicional.nome}}</option>
                         {% endfor %}
                     </select>
+                    <div id="inputCheck" style="display:none;">
+                        <fieldset class="checkbox mt-1">
+                            <label>
+                                <input type="checkbox" name="input_adicionais" value="habilitado" onclick="mostrarAdicionais(this)">
+                                Adicionais
+                            </label>
+                        </fieldset>
+                    </div>
+                    <div id="inputAdicionais" style="display:none;">
+                        <select class="select2 form-control" style="width: 100%;" multiple="multiple" name="adicionais" id="adicionais" aria-label="Default select example">
+                            <optgroup label="Caldas">
+                                {% for calda in caldas %}
+                                    <option value="{{calda.nome}}">{{calda.nome}}</option>
+                                {% endfor %}
+                            </optgroup>
+    
+                            <optgroup label="Cremes">
+                                {% for creme in cremes %}
+                                    <option value="{{creme.nome}}">{{creme.nome}}</option>
+                                {% endfor %}
+                            </optgroup>
+    
+                            <optgroup label="Frutas">
+                                {% for fruta in frutas %}
+                                    <option value="{{fruta.nome}}">{{fruta.nome}}</option>
+                                {% endfor %}
+                            </optgroup>
+    
+                            <optgroup label="Outros">
+                                {% for adicional in adicionais %}
+                                    <option value="{{adicional.nome}}">{{adicional.nome}}</option>
+                                {% endfor %}
+                            </optgroup>
+                        </select>
+                    </div>
                 </div>
             </div>
 
             <div class="card-header">
-                <h5 class="font-weight-bold">Endereço:</h5>
+                <h5 class="font-weight-bold" style="margin-bottom: -18px;">Endereço:</h5>
             </div>
             <div class="card-body">
                 <div class="col">
@@ -75,14 +111,14 @@
                     </div>
                 </div>
                 <div class="card-header">
-                    <h5 class="font-weight-bold">Info. do cliente e forma de pagamento:</h5>
+                    <h5 class="font-weight-bold" style="margin-bottom: -18px;">Info. do cliente e forma de pagamento:</h5>
                 </div>
                 <div class="card-body">
                     <div class="col">
                         <label>Nome:</label>
                             <input class="form-control" type="text" placeholder="Nome" required id="nome" name="nome">
                         </div><br>
-                        <label class="font-weight-bold">Forma de pagamento:</label>
+                        <label class="font-weight-bold" style="margin-bottom: -18px;">Forma de pagamento:</label>
                         <div class="row">
                             <div class="col-6">
                                 <fieldset class="radio">
@@ -103,7 +139,7 @@
                         </div>
                         <div id="inputDinheiro" style="display:none;">
                             <label>Troco pra quanto?</label>
-                            <input class="form-control" type="text" placeholder="Troco pra quanto?" id="dinheiro" name="dinheiro_valor">
+                            <input class="form-control" type="number" placeholder="Troco pra quanto?" id="dinheiro" name="dinheiro_valor">
                         </div>
                     </div>
                 </div>
@@ -148,6 +184,18 @@
     });
 
     
+    function mostrarAdicionais(elemento) {
+        var inputAdicionais = document.getElementById('inputAdicionais');
+        habilitarAdicionais = elemento.checked;
+
+        if (habilitarAdicionais) {
+            inputAdicionais.style.display = 'block';
+        } else {
+            inputAdicionais.style.display = 'none';
+        }
+    }
+     
+
     function mostrarInput(elemento) {
         var inputDinheiro = document.getElementById('inputDinheiro');
 
@@ -158,6 +206,7 @@
         }
     }
     
+
     function alertaInput(){
         Swal.fire({
             icon: 'warning',
@@ -172,7 +221,8 @@
         var caldas = $("#caldas").val().join(", ") || [];
         var creme = $("#creme").val().join(", ") || [];
         var fruta = $("#fruta").val().join(", ") || [];
-        var outros = $("#adicionais").val().join(", ") || [];
+        var outros = $("#outros").val().join(", ") || [];
+        var adicionais = $("#adicionais").val().join(", ") || [];
 
         var bairro = $("#bairro").val() || '-----';
         var rua = $("#rua").val() || '-----';
@@ -182,11 +232,14 @@
         var nome = $("#nome").val() || '-----';
         
         var formaDePagamento = $("input[name='formaDePagamento']:checked").val() || '-----';
+        var inputAdicionais = $("input[name='input_adicionais']:checked").val() || '-----';
         var dinheiroValor = $("#dinheiro").val() || '-----';
 
         if (bairro === '-----' || rua === '-----' || numeroDaCasa === '-----'){
             alertaInput()
         } else {
+            
+            
             $("#modal-pedido").modal('show');
 
             $('#body-modal').empty(); 
@@ -196,8 +249,11 @@
                   tamanhoAcai === '500 ML' ? 18 :
                   tamanhoAcai === 'Potão' ? 20 :
                   'Valor não correspondente';
-
-            var total = valorExibido + 2;
+                  
+            var adicionais = inputAdicionais === 'habilitado' ? adicionais : '';
+            
+            var total = adicionais.length > 0 ? total = valorExibido + 4 : total = valorExibido + 2;
+            
             const newRow = `
                 <h6 class="text-left">Tamanho do copo:<strong> ${tamanhoAcai}</strong></h6>
                 <h6 class="text-left">Caldas:</h6>
@@ -212,9 +268,13 @@
                 <ul class="text-left">
                     <strong><li>${fruta}</li></strong>
                 </ul>
-                <h6 class="text-left">Adicionais:</h6>
+                <h6 class="text-left">Outros:</h6>
                 <ul class="text-left">
                     <strong><li>${outros}</li></strong>
+                </ul>
+                <h6 class="text-left">Adicionais:</h6>
+                <ul class="text-left">
+                    <strong><li>${adicionais}</li></strong>
                 </ul>
                 <hr>
                 <div class="text-left">
@@ -227,6 +287,7 @@
                 <hr>
                 <div class="text-left">
                     Valor Açai: <strong>R$ ${valorExibido}</strong><br>
+                    Adicionais: ${adicionais.length > 0 ? '<strong>R$ +2</strong> <br>' : '-----<br>'}
                     Taxa de entrega: <strong>R$ +2</strong> <br>
                     Total: <strong>R$ ${total}</strong>
                 </div>
@@ -236,30 +297,30 @@
         }
     }
     
-
     function gerarLinkWhatsApp() {
         var numeroWhatsApp = '9985572142';
-
+    
         var tamanhoAcai = $("#tamanho").val();
         var caldas = $("#caldas").val() || [];
         var creme = $("#creme").val() || [];
         var fruta = $("#fruta").val() || [];
-        var outros = $("#adicionais").val() || [];
-
+        var outros = $("#outros").val() || [];
+    
+        var adicionais = $("#adicionais").val() || [];
+    
         var bairro = $("#bairro").val() || '-----';
         var rua = $("#rua").val() || '-----';
         var numeroDaCasa = $("#numeroDaCasa").val() || '-----';
         var complemento = $("#Complemento").val() || '-----';
-
+    
         var nome = $("#nome").val() || '-----';
         
         var formaDePagamento = $("input[name='formaDePagamento']:checked").val() || '-----';
+        var inputAdicionais = $("input[name='input_adicionais']:checked").val() || '-----';
         var dinheiroValor = $("#dinheiro").val() || '-----';
-        
-
-
-        if (bairro === '-----' || rua === '-----' || numeroDaCasa === '-----'){
-            alertaInput()
+    
+        if (bairro === '-----' || rua === '-----' || numeroDaCasa === '-----') {
+            alertaInput();
         } else {
             if (numeroWhatsApp && numeroWhatsApp.match(/^\d+$/)) {
                 var pedidos = [
@@ -268,7 +329,9 @@
                     `Frutas: *${fruta.length > 0 ? fruta.join(", ") : '-----'}*`,
                     `Caldas: *${caldas.length > 0 ? caldas.join(", ") : '-----'}*`,
                     `Cremes: *${creme.length > 0 ? creme.join(", ") : '-----'}*`,
-                    `Adicionais: *${outros.length > 0 ? outros.join(", ") : '-----'}*\n`,
+                    `Outros: *${outros.length > 0 ? outros.join(", ") : '-----'}*`,
+                    inputAdicionais ? 'Adicionais: *' + (adicionais.join(", ") || '-----') + '*' : '',
+                    '\n',
                     '======== ENDEREÇO ========',
                     `Bairro: *${bairro}*`,
                     `Rua: *${rua}*`,
@@ -283,15 +346,22 @@
                     pedidos.push(`Dinheiro: *R$ ${dinheiroValor}*`);
                 }
     
-    
                 var mensagem = pedidos.join("\n");
-                var url = 'whatsapp://send?phone=' + numeroWhatsApp + '&text=' + encodeURIComponent(mensagem);
+                var url = 'https://wa.me/' + numeroWhatsApp + '?text=' + encodeURIComponent(mensagem);
     
-                window.location.href = url;
+                // Check if the device is an iPhone
+                var isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    
+                if (isIOS) {
+                    // Open the link in a new tab or window
+                    window.open(url, '_blank');
+                } else {
+                    // For non-iOS devices, use the original window.location.href
+                    window.open(url, '_blank');
+                }
             } else {
                 alert('Número de WhatsApp inválido. Por favor, insira um número válido.');
             }
-            
         }
     }
 
@@ -305,46 +375,55 @@
     $(document).ready(function () {
         $('.select2').select2();
     
-        $('#caldas, #creme, #fruta, #adicionais').on('change', function () {
+        $('#caldas, #creme, #fruta, #outros').on('change', function () {
            
             var totalItens = $('#caldas').val().length +
                 $('#creme').val().length +
                 $('#fruta').val().length +
-                $('#adicionais').val().length;
+                $('#outros').val().length;
             
             if (totalItens >= 6) {
-                
+                var inputAdicionais = document.getElementById('inputAdicionais');
+                inputAdicionais.style.display = 'block';
+
+                var inputCheck = document.getElementById('inputCheck');
+                inputCheck.style.display = 'block';
+               
                 $('.select2-selection__choice').addClass('select2-selection__choice--removable');
             } else {
-                
+                var inputAdicionais = document.getElementById('inputAdicionais');
+                inputAdicionais.style.display = 'none';
+
+                var inputCheck = document.getElementById('inputCheck');
+                inputCheck.style.display = 'none';
                 $('.select2-selection__choice').removeClass('select2-selection__choice--removable');
             }
         });
     
-        $('#caldas, #creme, #fruta, #adicionais').on('select2:open', function () {
+        $('#caldas, #creme, #fruta, #outros').on('select2:open', function () {
             var totalItens = $('#caldas').val().length +
                 $('#creme').val().length +
                 $('#fruta').val().length +
-                $('#adicionais').val().length;
+                $('#outros').val().length;
     
             if (totalItens >= 6) {
                 Swal.fire({
                     icon: 'warning',
                     title: 'ATENÇÃO!',
-                    text: 'Você atingiu o limite de itens adicionados!',
+                    text: 'Você atingiu o limite máximo de itens adicionados!',
                 });
             }
         });
-    
+
         $('.select2-selection__choice').on('click', function () {
             var totalItens = $('#caldas').val().length +
                 $('#creme').val().length +
                 $('#fruta').val().length +
-                $('#adicionais').val().length;
+                $('#outros').val().length;
     
             if (totalItens >= 6) {
                 $(this).remove();
-                $('#caldas, #creme, #fruta, #adicionais').val(null).trigger('change');
+                $('#caldas, #creme, #fruta, #outros').val(null).trigger('change');
             }
         });
     });

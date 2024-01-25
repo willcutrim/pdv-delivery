@@ -12,7 +12,7 @@ from rest_framework import status
 from django.views.generic.edit import UpdateView
 from django.utils import timezone
 import random
-
+import time
 
 
 
@@ -283,7 +283,7 @@ def pedido_whatsapp(request):
             forma_de_pagamento=forma_de_pagamento,
             dinheiro_valor=dinheiro_valor
         )
-        
+        time.sleep(2)
         # Salvar o pedido
         pedido.save()
 
