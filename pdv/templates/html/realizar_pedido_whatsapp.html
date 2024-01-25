@@ -51,41 +51,33 @@
                             <option value="{{adicional.nome}}">{{adicional.nome}}</option>
                         {% endfor %}
                     </select>
-                    <div id="inputCheck" style="display:none;">
-                        <fieldset class="checkbox mt-1">
-                            <label>
-                                <input type="checkbox" name="input_adicionais" value="habilitado" onclick="mostrarAdicionais(this)">
-                                Adicionais
-                            </label>
-                        </fieldset>
-                    </div>
-                    <div id="inputAdicionais" style="display:none;">
-                        <select class="select2 form-control" style="width: 100%;" multiple="multiple" name="adicionais" id="adicionais" aria-label="Default select example">
-                            <optgroup label="Caldas">
-                                {% for calda in caldas %}
-                                    <option value="{{calda.nome}}">{{calda.nome}}</option>
-                                {% endfor %}
-                            </optgroup>
-    
-                            <optgroup label="Cremes">
-                                {% for creme in cremes %}
-                                    <option value="{{creme.nome}}">{{creme.nome}}</option>
-                                {% endfor %}
-                            </optgroup>
-    
-                            <optgroup label="Frutas">
-                                {% for fruta in frutas %}
-                                    <option value="{{fruta.nome}}">{{fruta.nome}}</option>
-                                {% endfor %}
-                            </optgroup>
-    
-                            <optgroup label="Outros">
-                                {% for adicional in adicionais %}
-                                    <option value="{{adicional.nome}}">{{adicional.nome}}</option>
-                                {% endfor %}
-                            </optgroup>
-                        </select>
-                    </div>
+
+                    <label>Adicionais:</label>
+                    <select class="select2 form-control" disabled style="width: 100%;" multiple="multiple" name="adicionais" id="adicionais" aria-label="Default select example">
+                        <optgroup label="Caldas">
+                            {% for calda in caldas %}
+                                <option value="{{calda.nome}}">{{calda.nome}}</option>
+                            {% endfor %}
+                        </optgroup>
+
+                        <optgroup label="Cremes">
+                            {% for creme in cremes %}
+                                <option value="{{creme.nome}}">{{creme.nome}}</option>
+                            {% endfor %}
+                        </optgroup>
+
+                        <optgroup label="Frutas">
+                            {% for fruta in frutas %}
+                                <option value="{{fruta.nome}}">{{fruta.nome}}</option>
+                            {% endfor %}
+                        </optgroup>
+
+                        <optgroup label="Outros">
+                            {% for adicional in adicionais %}
+                                <option value="{{adicional.nome}}">{{adicional.nome}}</option>
+                            {% endfor %}
+                        </optgroup>
+                    </select>
                 </div>
             </div>
 
@@ -183,18 +175,6 @@
         $('.select2').select2();
     });
 
-    
-    function mostrarAdicionais(elemento) {
-        var inputAdicionais = document.getElementById('inputAdicionais');
-        habilitarAdicionais = elemento.checked;
-
-        if (habilitarAdicionais) {
-            inputAdicionais.style.display = 'block';
-        } else {
-            inputAdicionais.style.display = 'none';
-        }
-    }
-     
 
     function mostrarInput(elemento) {
         var inputDinheiro = document.getElementById('inputDinheiro');
@@ -215,6 +195,20 @@
         });
     }
 
+    function calcTotal(adicionais) {
+        console.log(adicionais.length);
+        if (adicionais.length > 0){
+            var adicionaisArray = adicionais.split(',').map(function (item) {
+                return item.trim();
+            });
+        } else {
+            return 0
+        }
+
+
+        var total =adicionaisArray.length * 2;
+        return total
+    }
 
     function abrirModal(){
         var tamanhoAcai = $("#tamanho").val();
@@ -232,7 +226,6 @@
         var nome = $("#nome").val() || '-----';
         
         var formaDePagamento = $("input[name='formaDePagamento']:checked").val() || '-----';
-        var inputAdicionais = $("input[name='input_adicionais']:checked").val() || '-----';
         var dinheiroValor = $("#dinheiro").val() || '-----';
 
         if (bairro === '-----' || rua === '-----' || numeroDaCasa === '-----'){
@@ -250,10 +243,13 @@
                   tamanhoAcai === 'Potão' ? 20 :
                   'Valor não correspondente';
                   
-            var adicionais = inputAdicionais === 'habilitado' ? adicionais : '';
+                  
+            var adicionais = adicionais === '' ? '' : adicionais;
+            var totalAdicionais = calcTotal(adicionais)
+
+            var total = valorExibido + totalAdicionais + 2;
             
-            var total = adicionais.length > 0 ? total = valorExibido + 4 : total = valorExibido + 2;
-            
+        
             const newRow = `
                 <h6 class="text-left">Tamanho do copo:<strong> ${tamanhoAcai}</strong></h6>
                 <h6 class="text-left">Caldas:</h6>
@@ -286,8 +282,8 @@
                 </div>
                 <hr>
                 <div class="text-left">
-                    Valor Açai: <strong>R$ ${valorExibido}</strong><br>
-                    Adicionais: ${adicionais.length > 0 ? '<strong>R$ +2</strong> <br>' : '-----<br>'}
+                    Valor do açai: <strong>R$ ${valorExibido}</strong><br>
+                    Adicionais: ${totalAdicionais > 0 ? `<strong>R$ +${totalAdicionais}</strong> <br>` : '-----<br>'}
                     Taxa de entrega: <strong>R$ +2</strong> <br>
                     Total: <strong>R$ ${total}</strong>
                 </div>
@@ -376,26 +372,19 @@
         $('.select2').select2();
     
         $('#caldas, #creme, #fruta, #outros').on('change', function () {
-           
             var totalItens = $('#caldas').val().length +
                 $('#creme').val().length +
                 $('#fruta').val().length +
                 $('#outros').val().length;
-            
+    
+            var inputAdicionais = document.getElementById('adicionais');
+    
             if (totalItens >= 6) {
-                var inputAdicionais = document.getElementById('inputAdicionais');
-                inputAdicionais.style.display = 'block';
-
-                var inputCheck = document.getElementById('inputCheck');
-                inputCheck.style.display = 'block';
-               
+                inputAdicionais.removeAttribute('disabled');
                 $('.select2-selection__choice').addClass('select2-selection__choice--removable');
             } else {
-                var inputAdicionais = document.getElementById('inputAdicionais');
-                inputAdicionais.style.display = 'none';
-
-                var inputCheck = document.getElementById('inputCheck');
-                inputCheck.style.display = 'none';
+                inputAdicionais.setAttribute('disabled', 'disabled');
+                $('#adicionais').val(null).trigger('change'); // Limpar os valores selecionados
                 $('.select2-selection__choice').removeClass('select2-selection__choice--removable');
             }
         });
@@ -414,7 +403,7 @@
                 });
             }
         });
-
+    
         $('.select2-selection__choice').on('click', function () {
             var totalItens = $('#caldas').val().length +
                 $('#creme').val().length +
@@ -427,7 +416,7 @@
             }
         });
     });
-    
+     
 
     
 
