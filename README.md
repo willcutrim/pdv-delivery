@@ -26,7 +26,7 @@ O SIMPLES PDV é um sistema desenvolvido para atender às necessidades de pequen
 ## Suporte e Contato!
 
 
-Para suporte ou dúvidas, entre em contato conosco em [willya894@gmail.com].
+Para suporte ou dúvidas, entre em contato conosco em [willyam894@gmail.com].
 
 Esperamos que o SIMLES PDV seja útil para a gestão eficiente do seu pequeno negócio!
 
