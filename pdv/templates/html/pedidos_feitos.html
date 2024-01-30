@@ -41,14 +41,25 @@
                             <td>{{ pedido.nome|default:"-----"  }}</td>
                             <td>{{ pedido.create|default:"-----"  }}</td>
                             <td>
-                                
-                                <a href="" class="btn btn-warning">
-                                    <i class="icon-pencil"></i>
-                                </a>
-                                
                                 <form action="{% url 'deletar-pedido' pedido.pk%}" method="post" class="d-inline" id="deleteForm{{ pedido.id }}">{% csrf_token %}
                                     <button class="btn btn-danger" type="button" onclick="confirmDelete({{ pedido.id }})"><i class="icon-trash"></i></button>
                                 </form>
+                                <a class="btn btn-info" onclick="openModalInfoPeido(
+                                    '{{pedido.nome}}', 
+                                    '{{pedido.bairro}}', 
+                                    '{{pedido.rua}}', 
+                                    '{{pedido.numero_da_casa}}', 
+                                    '{{pedido.complemento}}', 
+                                    '{{pedido.create}}', 
+                                    '{{pedido.codigo_do_pedido}}', 
+                                    '{{pedido.tamanho_acai}}',
+                                    '{% for item in pedido.caldas.all %}{{ item.nome }}{% if not forloop.last %}, {% endif %}{% endfor %}',
+                                    '{% for item in pedido.creme.all %}{{ item.nome }}{% if not forloop.last %}, {% endif %}{% endfor %}', 
+                                    '{% for item in pedido.fruta.all %}{{ item.nome }}{% if not forloop.last %}, {% endif %}{% endfor %}', 
+                                    '{% for item in pedido.adicionais.all %}{{ item.nome }}{% if not forloop.last %}, {% endif %}{% endfor %}'
+                                )">
+                                    <i class="icon-info"></i>
+                                </a>
                             </td>
                         </tr>
                     {% endfor %}
@@ -72,8 +83,26 @@
                     {% endif %}
                 </span>
             </div> 
-            
         </div>
+    </div>
+</div>
+
+<div class="modal fade text-center" id="modal-pedido" tabindex="-1" role="dialog" aria-labelledby="myModalLabel8" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header bg-primary white">
+          <h4 class="modal-title" id="myModalLabel8">Informações do pedido!</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body" id="body-modal">
+          
+        </div>
+        <div class="modal-footer" id="footer-modal">
+
+        </div>
+      </div>
     </div>
 </div>
 
@@ -98,6 +127,45 @@
                 document.getElementById('deleteForm' + produtoId).submit();
             }
         });
+    }
+
+    function openModalInfoPeido(nome, bairro, rua, numero_da_casa, complemento, create, codigo_do_pedido, tamanho, caldas, creme, fruta, adicional){
+        $("#modal-pedido").modal('show');
+        $('#body-modal').empty(); 
+
+       
+        $('#footer-modal').empty();
+
+        const body = `
+            <h3><strong>${nome} </strong></h3><hr>
+            
+            <div class="text-left">
+                <h5><strong>Tamanho: ${tamanho || '-----'}</strong></h5>
+                Caldas: <strong>${caldas || '-----'}</strong><br>
+                Cremes: <strong>${creme || '-----'}</strong><br>
+                Frutas: <strong>${fruta || '-----'}</strong><br>
+                Outros: <strong>${adicional || '-----'}</strong><br>
+            </div><hr>
+            <div class="text-left">
+                <h3 class="text-left">Endereço:</h3>
+                Bairro: <strong>${bairro || '-----'}</strong><br>
+                Rua: <strong>${rua || '-----'}</strong><br>
+                Nº: <strong>${numero_da_casa || '-----'}</strong><br>
+                Ponto de referencia: <strong>${complemento || '-----'}</strong> 
+            </div>
+        `;
+
+        const footer = `  
+            <div class="d-flex justify-content-between" style="width: 100%;">
+                <p class="text-white bg-primary rounded">#${codigo_do_pedido}</p>
+                <p>${create}</p>
+            </div>
+        `;
+
+        
+        $('#body-modal').append(body); 
+
+        $('#footer-modal').append(footer); 
     }
 </script>
 {% endblock content %}
