@@ -47,8 +47,8 @@
 
                     <label>Outros:</label>
                     <select class="select2 form-control" aria-label="Default select example" multiple="multiple" id="outros" name="outros">
-                        {% for adicional in adicionais %}
-                            <option value="{{adicional.nome}}">{{adicional.nome}}</option>
+                        {% for outro in outros %}
+                            <option value="{{outro.nome}}">{{outro.nome}}</option>
                         {% endfor %}
                     </select>
 
@@ -73,8 +73,8 @@
                         </optgroup>
 
                         <optgroup label="Outros">
-                            {% for adicional in adicionais %}
-                                <option value="{{adicional.nome}}">{{adicional.nome}}</option>
+                            {% for outro in outros %}
+                                <option value="{{outro.nome}}">{{outro.nome}}</option>
                             {% endfor %}
                         </optgroup>
                     </select>

@@ -2,7 +2,7 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic import TemplateView
 from .forms import ProdutosForm, SaidaForm, FormPedido
-from .models import Acai, Adicionais, Caldas, Cremes, Frutas, Produtos, Carrinho, RelatorioEntradaSaida, Saida, Pedido
+from .models import Acai, Adicionais, Caldas, Cremes, Frutas, Outros, Produtos, Carrinho, RelatorioEntradaSaida, Saida, Pedido
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .serializer import CarrinhoSerializer
 from django.db.models import Sum
@@ -261,6 +261,7 @@ def pedido_whatsapp(request):
         caldas = request.POST.getlist('caldas', [])
         cremes = request.POST.getlist('creme', [])
         frutas = request.POST.getlist('fruta', [])
+        outros = request.POST.getlist('outros', [])
         adicionais = request.POST.getlist('adicionais', [])
         bairro = request.POST.get('bairro', '')
         rua = request.POST.get('rua', '')
@@ -271,6 +272,8 @@ def pedido_whatsapp(request):
         dinheiro_valor = request.POST.get('dinheiro_valor', '')
 
         codigo_do_pedido = gerar_codigo_unico()
+
+        objetos_adicionais = [Adicionais.objects.create(nome=nome_adicional) for nome_adicional in adicionais]
 
         pedido = Pedido(
             codigo_do_pedido=codigo_do_pedido,
@@ -283,14 +286,16 @@ def pedido_whatsapp(request):
             forma_de_pagamento=forma_de_pagamento,
             dinheiro_valor=dinheiro_valor
         )
-        time.sleep(2)
-        # Salvar o pedido
+       
+        print(adicionais)
+       
         pedido.save()
 
         pedido.caldas.set(Caldas.objects.filter(nome__in=caldas))
         pedido.creme.set(Cremes.objects.filter(nome__in=cremes))
         pedido.fruta.set(Frutas.objects.filter(nome__in=frutas))
-        pedido.adicionais.set(Adicionais.objects.filter(nome__in=adicionais))
+        pedido.outros.set(Outros.objects.filter(nome__in=outros))
+        pedido.adicionais.set(objetos_adicionais)
 
 
     context = {
@@ -298,7 +303,7 @@ def pedido_whatsapp(request):
         'caldas':  Caldas.objects.all(),
         'cremes':  Cremes.objects.all(),
         'frutas': Frutas.objects.all(),
-        'adicionais': Adicionais.objects.all(),
+        'outros': Outros.objects.all(),
     }
     return render(request, 'html/realizar_pedido_whatsapp.html', context)
 

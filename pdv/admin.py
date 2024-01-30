@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import (Produtos, Carrinho, RelatorioEntradaSaida, 
                      Saida, Pedido, Acai, Caldas, Cremes, Frutas, 
-                     Adicionais)
+                     Adicionais, Outros)
 
 admin.site.register(Carrinho)
 
@@ -15,3 +15,4 @@ admin.site.register(Caldas)
 admin.site.register(Cremes)
 admin.site.register(Frutas)
 admin.site.register(Adicionais)
+admin.site.register(Outros)

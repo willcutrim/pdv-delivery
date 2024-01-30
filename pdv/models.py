@@ -83,17 +83,27 @@ class Frutas(models.Model):
 
     def __str__(self):
         return self.nome
-class Adicionais(models.Model):
+class Outros(models.Model):
     nome = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
         return self.nome
+    
+class Adicionais(models.Model):
+    nome = models.CharField(max_length=255, blank=True, null=True)
+    adicionais_relacionados = models.ManyToManyField('self', blank=True)
+
+    def __str__(self):
+        return self.nome
+
+    
 class Pedido(models.Model):
     codigo_do_pedido = models.CharField(max_length=10, unique=True)
     tamanho_acai = models.CharField(max_length=255, blank=True, null=True)
     caldas = models.ManyToManyField(Caldas, blank=True)
     creme = models.ManyToManyField(Cremes, blank=True)
     fruta = models.ManyToManyField(Frutas, blank=True)
+    outros = models.ManyToManyField(Outros, blank=True)
     adicionais = models.ManyToManyField(Adicionais, blank=True)
     bairro = models.CharField(max_length=255)
     rua = models.CharField(max_length=255)

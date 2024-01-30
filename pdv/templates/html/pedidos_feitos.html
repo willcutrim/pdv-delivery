@@ -56,6 +56,7 @@
                                     '{% for item in pedido.caldas.all %}{{ item.nome }}{% if not forloop.last %}, {% endif %}{% endfor %}',
                                     '{% for item in pedido.creme.all %}{{ item.nome }}{% if not forloop.last %}, {% endif %}{% endfor %}', 
                                     '{% for item in pedido.fruta.all %}{{ item.nome }}{% if not forloop.last %}, {% endif %}{% endfor %}', 
+                                    '{% for item in pedido.outros.all %}{{ item.nome }}{% if not forloop.last %}, {% endif %}{% endfor %}',
                                     '{% for item in pedido.adicionais.all %}{{ item.nome }}{% if not forloop.last %}, {% endif %}{% endfor %}'
                                 )">
                                     <i class="icon-info"></i>
@@ -129,7 +130,7 @@
         });
     }
 
-    function openModalInfoPeido(nome, bairro, rua, numero_da_casa, complemento, create, codigo_do_pedido, tamanho, caldas, creme, fruta, adicional){
+    function openModalInfoPeido(nome, bairro, rua, numero_da_casa, complemento, create, codigo_do_pedido, tamanho, caldas, creme, fruta, outros, adicionais){
         $("#modal-pedido").modal('show');
         $('#body-modal').empty(); 
 
@@ -144,7 +145,8 @@
                 Caldas: <strong>${caldas || '-----'}</strong><br>
                 Cremes: <strong>${creme || '-----'}</strong><br>
                 Frutas: <strong>${fruta || '-----'}</strong><br>
-                Outros: <strong>${adicional || '-----'}</strong><br>
+                Outros: <strong>${outros || '-----'}</strong><br>
+                Adicionais: <strong>${adicionais || '-----'}</strong><br>
             </div><hr>
             <div class="text-left">
                 <h3 class="text-left">Endereço:</h3>
