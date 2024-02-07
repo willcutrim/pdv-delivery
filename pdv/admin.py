@@ -1,11 +1,9 @@
 from django.contrib import admin
-from .models import (Produtos, Carrinho, RelatorioEntradaSaida, 
+from .models import (RelatorioEntradaSaida, 
                      Saida, Pedido, Acai, Caldas, Cremes, Frutas, 
                      Adicionais, Outros)
 
-admin.site.register(Carrinho)
 
-admin.site.register(Produtos)
 admin.site.register(RelatorioEntradaSaida)
 admin.site.register(Saida)
 admin.site.register(Pedido)

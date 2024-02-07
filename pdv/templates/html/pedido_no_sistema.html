@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% load bootstrap5 %}
+{% load static %}
+{% block title %}Realizar pedido no sistema{% endblock %}
+
+
+{% block content %}
+<div class="container-fluid">
+    <div class="card shadow">
+        <div class="card-header">
+            <h5 class="font-weight-bold">CRIAR PEDIDOS</h5>
+        </div>
+        <div class="card-body">
+            <form method="post" id="product-form">
+                {% csrf_token %}
+            
+                <div class="mb-3">
+                    <label class="form-label" for="id_nome">Nome do cliente</label>
+                    <input type="text" name="nome" maxlength="255" class="form-control" placeholder="Nome do cliente" title="" required="" id="id_nome">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="id_tamanho_acai">Tamanho do açai</label>
+                    <select class="form-control" aria-label="Default select example" id="tamanho_acai" name="tamanho_acai">
+                        <option value="" selected>Selecione o tamanho do copo</option>
+                        {% for acai in tamanho_acai %}
+                            <option value="{{acai.tamaho_do_acai}}">{{acai.tamaho_do_acai}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3"><label class="form-label" for="id_forma_de_pagamento">Forma de pagamento</label><input type="text" name="forma_de_pagamento" maxlength="255" class="form-control" placeholder="Forma de pagamento" title="" required="" id="id_forma_de_pagamento"></div>
+                <div class="mb-3">
+                    <label class="form-label" for="id_valor_do_pedido">Valor total do pedido</label>
+                    <input type="text" name="valor_do_pedido" maxlength="255" class="form-control" placeholder="Valor total do pedido" title="" id="id_valor_do_pedido">
+                </div>
+                <button type="submit" class="btn btn-secondary btn-min-width mr-1 mb-1 mt-1">Cadastrar</button>
+            </form>
+        </div>
+    </div>  
+</div>
+
+<script src="{% static 'js/sweetalert2.all.min.js'%}"></script>
+<script src="{% static 'js/sweetalert2@11.js' %}"></script>
+<script src="{% static 'jquery/jquery.min.js'%}"></script>
+<script>
+    $(document).ready(function () {
+        $('#product-form').submit(function (e) {
+            e.preventDefault();
+
+            $.ajax({
+                type: 'POST',
+                url: '{% url "realizar-pedido" %}',
+                data: $('#product-form').serialize(),
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: 'Pedido feito com sucesso!',
+                            timer: 2000,
+                            showConfirmButton: false,
+                        }).then(function () {
+                            location.reload();
+                        });
+                    }
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        });
+    });
+</script>
+{% endblock content %}
+
+

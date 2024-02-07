@@ -3,27 +3,7 @@ from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
 
 
-class Produtos(models.Model):
 
-    nome_produto = models.CharField(max_length=150)
-    preco_do_produto = models.DecimalField(max_digits=10, decimal_places=2)
-    descricao = models.TextField()
-    quantidade = models.PositiveIntegerField(default=1)
-
-    def __str__(self) -> str:
-        return self.nome_produto
-    
-
-class Carrinho(models.Model):
-    status_entrada = models.CharField(max_length=120, default='entrada')
-    produtos = models.ManyToManyField(Produtos)
-    valor_total = models.DecimalField(decimal_places=2, max_digits=10, default=0, blank=True)
-    data_compra = models.DateTimeField(auto_now_add=True)
-
-
-    def __str__(self):
-        return f'Carrinho #{self.valor_total} - {self.data_compra}'
-    
 
 class Saida(models.Model):
     saida_status = models.CharField(max_length=120, default='saida')
@@ -96,10 +76,12 @@ class Adicionais(models.Model):
     def __str__(self):
         return self.nome
 
-    
+
 class Pedido(models.Model):
+    saida_status = models.CharField(max_length=120, default='Entrada')
     codigo_do_pedido = models.CharField(max_length=10, unique=True)
-    tamanho_acai = models.CharField(max_length=255, blank=True, null=True)
+    valor_do_pedido = models.CharField(max_length=255, blank=True, null=True,  verbose_name="Valor total do pedido")
+    tamanho_acai = models.CharField(max_length=255, blank=True, null=True, verbose_name="Tamanho do açai")
     caldas = models.ManyToManyField(Caldas, blank=True)
     creme = models.ManyToManyField(Cremes, blank=True)
     fruta = models.ManyToManyField(Frutas, blank=True)
@@ -109,56 +91,36 @@ class Pedido(models.Model):
     rua = models.CharField(max_length=255)
     numero_da_casa = models.CharField(max_length=255)
     complemento = models.CharField(max_length=255)
-    nome = models.CharField(max_length=255)
-    forma_de_pagamento = models.CharField(max_length=255)
+    nome = models.CharField(max_length=255, verbose_name="Nome do cliente")
+    forma_de_pagamento = models.CharField(max_length=255, verbose_name="Forma de pagamento")
     dinheiro_valor = models.CharField(max_length=255, blank=True, null=True)
     create = models.DateTimeField(auto_now_add=True)
 
 
     def __str__(self):
-        return f'Código do Pedido: {self.codigo_do_pedido}'
+        return f'Código do Pedido: {self.valor_do_pedido}'
+
+
 
 @receiver(post_save, sender=Saida)
 def create_relatorio_entrada_saida_saida(sender, instance, created, **kwargs):
     if created:
         RelatorioEntradaSaida.objects.create(
+            id_movimento=instance.pk,
             tipo=instance.saida_status,
             descricao=instance.tipo_de_despesa,
             valor=instance.valor_despesa,
             data=instance.data_saida
         )
 
-    
-@receiver(post_save, sender=Carrinho)
-def create_relatorio_entrada_saida(sender, instance, created, **kwargs):
+
+@receiver(post_save, sender=Pedido)
+def create_relatorio_entrada_(sender, instance, created, **kwargs):
     if created:
         RelatorioEntradaSaida.objects.create(
-            id_movimento=instance.id,
-            tipo=instance.status_entrada,
+            id_movimento=instance.pk,
+            tipo=instance.saida_status,
             descricao='Venda',
-            valor=instance.valor_total,
-            data=instance.data_compra
+            valor=instance.valor_do_pedido,
+            data=instance.create
         )
-        
-
-@receiver(pre_delete, sender=RelatorioEntradaSaida)
-def delete_relatorio_entrada_saida(sender, instance, **kwargs):
-    try:
-        relatorio = Carrinho.objects.get(id=instance.id_movimento)
-        relatorio.delete()
-    except Carrinho.DoesNotExist:
-        pass
-    except Exception as e:
-        #
-        print(f"Erro ao excluir relatório: {e}")
-
-@receiver(pre_delete, sender=Carrinho)
-def delete_venda_entrada(sender, instance, **kwargs):
-    try:
-        relatorio = RelatorioEntradaSaida.objects.get(id_movimento=instance.id)
-        relatorio.delete()
-    except RelatorioEntradaSaida.DoesNotExist:
-        pass
-    except Exception as e:
-        #
-        print(f"Erro ao excluir relatório: {e}")

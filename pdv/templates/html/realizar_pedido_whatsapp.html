@@ -8,7 +8,7 @@
 {% block content %}
 <div class="container-fluid">
     <div class="card shadow">
-        <form method="post">
+        <form method="post" id="form-id">
             <div class="card-header">
                 <h5 class="font-weight-bold">Monte seu açaí:</h5>
                 <p style="font-size: 12px; margin-bottom: -18px;">Você pode adicionar até 6 itens no açaí. Será cobrado +2 reais por adicional caso ultrapasse o limite.</p>
@@ -248,7 +248,7 @@
             var totalAdicionais = calcTotal(adicionais)
 
             var total = valorExibido + totalAdicionais + 2;
-            
+
         
             const newRow = `
                 <h6 class="text-left">Tamanho do copo:<strong> ${tamanhoAcai}</strong></h6>

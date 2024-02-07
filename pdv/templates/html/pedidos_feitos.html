@@ -42,9 +42,9 @@
                             <td>{{ pedido.create|default:"-----"  }}</td>
                             <td>
                                 <form action="{% url 'deletar-pedido' pedido.pk%}" method="post" class="d-inline" id="deleteForm{{ pedido.id }}">{% csrf_token %}
-                                    <button class="btn btn-danger" type="button" onclick="confirmDelete({{ pedido.id }})"><i class="icon-trash"></i></button>
+                                    <button class="btn btn-danger mt-1" type="button" onclick="confirmDelete({{ pedido.id }})"><i class="icon-trash"></i></button>
                                 </form>
-                                <a class="btn btn-info" onclick="openModalInfoPeido(
+                                <a class="btn btn-info mt-1" onclick="openModalInfoPeido(
                                     '{{pedido.nome}}', 
                                     '{{pedido.bairro}}', 
                                     '{{pedido.rua}}', 
@@ -57,7 +57,8 @@
                                     '{% for item in pedido.creme.all %}{{ item.nome }}{% if not forloop.last %}, {% endif %}{% endfor %}', 
                                     '{% for item in pedido.fruta.all %}{{ item.nome }}{% if not forloop.last %}, {% endif %}{% endfor %}', 
                                     '{% for item in pedido.outros.all %}{{ item.nome }}{% if not forloop.last %}, {% endif %}{% endfor %}',
-                                    '{% for item in pedido.adicionais.all %}{{ item.nome }}{% if not forloop.last %}, {% endif %}{% endfor %}'
+                                    '{% for item in pedido.adicionais.all %}{{ item.nome }}{% if not forloop.last %}, {% endif %}{% endfor %}',
+                                    '{{pedido.valor_do_pedido}}',
                                 )">
                                     <i class="icon-info"></i>
                                 </a>
@@ -87,7 +88,79 @@
         </div>
     </div>
 </div>
-
+<div class="row grouped-multiple-statistics-card">
+    <div class="col-12">
+        <div class="card">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-lg-3 col-xl-3 col-sm-6 col-12">
+                <div class="d-flex align-items-start mb-sm-1 mb-xl-0 border-right-blue-grey border-right-lighten-5">
+                  <span class="card-icon primary d-flex justify-content-center mr-3">
+                    <i class="icon p-1 icon-bar-chart customize-icon font-large-2 p-1 success"></i>
+                  </span>
+                  <div class="stats-amount mr-3">
+                      <h3 class="heading-text text-bold-600 text-success">
+                          {% if valor_total_vendas != 0%}
+                              R$ +{{valor_total_vendas}}
+                          {% else %}
+                              R$ 0
+                          {% endif %}
+                      </h3>
+                    <p class="sub-heading">Valor total</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-3 col-xl-3 col-sm-6 col-12">
+                <div class="d-flex align-items-start mb-sm-1 mb-xl-0 border-right-blue-grey border-right-lighten-5">
+                  <span class="card-icon blue-grey.bg-darken-2 d-flex justify-content-center mr-3">
+                    <i class="icon p-1 icon-calendar customize-icon font-large-2 p-1"></i>
+                  </span>
+                  <div class="stats-amount mr-3">
+                      <h3 class="heading-text text-bold-600 text-blue-grey.bg-darken-2">
+                          {% if valor_semanal != 0%}
+                              R$ +{{valor_semanal}}
+                          {% else %}
+                              R$ 0
+                          {% endif %}
+                      </h3>
+                    <p class="sub-heading">Valor semanal</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-3 col-xl-3 col-sm-6 col-12">
+                <div class="d-flex align-items-start mb-sm-1 mb-xl-0 border-right-blue-grey border-right-lighten-5">
+                  <span class="card-icon blue-grey.bg-darken-2 d-flex justify-content-center mr-3">
+                    <i class="icon p-1 icon-calendar customize-icon font-large-2 p-1"></i>
+                  </span>
+                  <div class="stats-amount mr-3">
+                      <h3 class="heading-text text-bold-600 text-blue-grey.bg-darken-2">
+                          {% if valor_diario != 0%}
+                              R$ +{{valor_diario}}
+                          {% else %}
+                              R$ 0
+                          {% endif %}
+                      </h3>
+                    <p class="sub-heading">Valor diário</p>
+                  </div>
+                </div>
+              </div>
+                <div class="col-lg-3 col-xl-3 col-sm-6 col-12">
+                    <div class="d-flex align-items-start">
+                    <span class="card-icon warning d-flex justify-content-center mr-3">
+                        <i class="icon p-1 icon-basket-loaded customize-icon font-large-2 p-1 info"></i>
+                    </span>
+                    <div class="stats-amount mr-3">
+                        <h3 class="heading-text text-bold-600 text-info ">{{count_pedidos|length}}</h3>
+                        <p class="sub-heading">Total de vendas</p>
+                    </div>
+                    </div>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
 <div class="modal fade text-center" id="modal-pedido" tabindex="-1" role="dialog" aria-labelledby="myModalLabel8" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
@@ -130,7 +203,7 @@
         });
     }
 
-    function openModalInfoPeido(nome, bairro, rua, numero_da_casa, complemento, create, codigo_do_pedido, tamanho, caldas, creme, fruta, outros, adicionais){
+    function openModalInfoPeido(nome, bairro, rua, numero_da_casa, complemento, create, codigo_do_pedido, tamanho, caldas, creme, fruta, outros, adicionais, valor_do_pedido){
         $("#modal-pedido").modal('show');
         $('#body-modal').empty(); 
 
@@ -141,12 +214,13 @@
             <h3><strong>${nome} </strong></h3><hr>
             
             <div class="text-left">
-                <h5><strong>Tamanho: ${tamanho || '-----'}</strong></h5>
+                Tamanho: <strong>${tamanho || '-----'}</strong>
                 Caldas: <strong>${caldas || '-----'}</strong><br>
                 Cremes: <strong>${creme || '-----'}</strong><br>
                 Frutas: <strong>${fruta || '-----'}</strong><br>
                 Outros: <strong>${outros || '-----'}</strong><br>
                 Adicionais: <strong>${adicionais || '-----'}</strong><br>
+                <h5><strong>Valor do pedido: ${valor_do_pedido || '-----'}</strong></h5>
             </div><hr>
             <div class="text-left">
                 <h3 class="text-left">Endereço:</h3>

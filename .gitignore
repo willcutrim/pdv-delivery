@@ -1,1 +1,6 @@
 .vercel
+
+gereciamentoDelivery/__pycache__/
+pdv/__pycache__/
+
+*/migrations/
