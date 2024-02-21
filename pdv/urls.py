@@ -19,5 +19,11 @@ urlpatterns = [
 
     path('relatorio-saidas', views.relatorio_saida, name='relatorio-saidas'),
 
-    path('realizar-pedido', views.realizar_pedido_sistema, name='realizar-pedido')
+    path('realizar-pedido', views.realizar_pedido_sistema, name='realizar-pedido'),
+
+    path('numero-de-pedido', views.RetornarNumeroPedido.as_view(), name='numero-de-pedido'),
+
+    path('produtos', views.produtos, name='produtos'),
+
+    path('deletar-caldas/<int:id>', views.deletar_produto_caldas, name='deletar-caldas'),
 ]

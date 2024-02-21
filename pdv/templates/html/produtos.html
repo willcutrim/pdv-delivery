@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Produtos{% endblock %}
+
+
+{% block content %}
+<div class="row">
+        <div class="col-lg-6 col-md-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="card-title">Cremes</h4> 
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped mb-0">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nome</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for creme in cremes %}
+                                    <tr>
+                                        <td>{{ creme.pk|default:"-----"  }}</td>
+                                        <td>{{ creme.nome|default:"-----"  }}</td>
+                                        <td>
+                                            <form action="" method="post" class="d-inline" id="deleteForm{{ creme.id }}">{% csrf_token %}
+                                                <button class="btn btn-danger" type="button" onclick="confirmDelete({{ creme.id }})"><i class="icon-trash"></i></button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        <div class="col-lg-6 col-md-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="card-title">Caldas</h4> 
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped mb-0">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nome</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for calda in caldas %}
+                                    <tr>
+                                        <td>{{ calda.pk|default:"-----"  }}</td>
+                                        <td>{{ calda.nome|default:"-----"  }}</td>
+                                        <td>
+                                            <form action="{% url 'deletar-caldas' calda.id %}" method="post" class="d-inline" id="deleteForm{{ calda.id }}">{% csrf_token %}
+                                                <button class="btn btn-danger" type="button" onclick="confirmDelete({{ calda.id }})"><i class="icon-trash"></i></button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6 col-md-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="card-title">Frutas</h4> 
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped mb-0">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nome</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for fruta in frutas %}
+                                    <tr>
+                                        <td>{{ fruta.pk|default:"-----"  }}</td>
+                                        <td>{{ fruta.nome|default:"-----"  }}</td>
+                                        <td>
+                                            <form action="" method="post" class="d-inline" id="deleteForm{{ fruta.id }}">{% csrf_token %}
+                                                <button class="btn btn-danger" type="button" onclick="confirmDelete({{ fruta.id }})"><i class="icon-trash"></i></button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+        <div class="col-lg-6 col-md-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="card-title">Frutas</h4> 
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped mb-0">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nome</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for outro in outros %}
+                                    <tr>
+                                        <td>{{ outro.pk|default:"-----"  }}</td>
+                                        <td>{{ outro.nome|default:"-----"  }}</td>
+                                        <td>
+                                            <form action="" method="post" class="d-inline" id="deleteForm{{ outro.id }}">{% csrf_token %}
+                                                <button class="btn btn-danger" type="button" onclick="confirmDelete({{ outro.id }})"><i class="icon-trash"></i></button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{% static 'js/sweetalert2.all.min.js'%}"></script>
+<script src="{% static 'js/sweetalert2@11.js' %}"></script>
+<script src="{% static "jquery/jquery.min.js"%}"></script>
+<script>
+    function confirmDelete(vendaId) {
+        Swal.fire({
+            title: 'Tem certeza?',
+            text: 'Você não poderá recuperar este registro!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sim, exclua-o!',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // If confirmed, submit the corresponding form
+                document.getElementById('deleteForm' + vendaId).submit();
+            }
+        });
+    }
+</script>
+{% endblock content %}

@@ -293,6 +293,34 @@
         }
     }
     
+    function retornarNumeroPedido() {
+        return fetch('http://127.0.0.1:8000/numero-de-pedido')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erro ao obter o número do pedido');
+                }
+                return response.json(); // Parse JSON response
+            })
+            .then(data => {
+                
+                return data; // Retorna os dados recebidos
+            })
+            .catch(error => {
+                console.error('Erro ao obter o número do pedido:', error);
+                throw error; // Rejeita a promessa com o erro
+            });
+    }
+    
+    async function minhaFuncao() {
+        try {
+            const numeroPedido = await retornarNumeroPedido();
+           return numeroPedido
+        } catch (error) {
+            console.error('Ocorreu um erro:', error);
+        }
+    }
+    
+
     function gerarLinkWhatsApp() {
         var numeroWhatsApp = '9985572142';
     
@@ -314,13 +342,16 @@
         var formaDePagamento = $("input[name='formaDePagamento']:checked").val() || '-----';
         var inputAdicionais = $("input[name='input_adicionais']:checked").val() || '-----';
         var dinheiroValor = $("#dinheiro").val() || '-----';
-    
+
+        const numero = minhaFuncao();
+        
+
         if (bairro === '-----' || rua === '-----' || numeroDaCasa === '-----') {
             alertaInput();
         } else {
             if (numeroWhatsApp && numeroWhatsApp.match(/^\d+$/)) {
                 var pedidos = [
-                    '======== PEDIDO ========',
+                    `======== PEDIDO *${numero}* ========`,
                     `Tamanho Açaí: *${tamanhoAcai || '-----'}*`,
                     `Frutas: *${fruta.length > 0 ? fruta.join(", ") : '-----'}*`,
                     `Caldas: *${caldas.length > 0 ? caldas.join(", ") : '-----'}*`,
@@ -341,13 +372,13 @@
                 if (formaDePagamento === 'Dinheiro') {
                     pedidos.push(`Dinheiro: *R$ ${dinheiroValor}*`);
                 }
-    
+               
                 var mensagem = pedidos.join("\n");
                 var url = 'https://wa.me/' + numeroWhatsApp + '?text=' + encodeURIComponent(mensagem);
     
                 // Check if the device is an iPhone
                 var isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-    
+                
                 if (isIOS) {
                     // Open the link in a new tab or window
                     window.open(url, '_blank');

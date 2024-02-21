@@ -98,7 +98,7 @@ class Pedido(models.Model):
 
 
     def __str__(self):
-        return f'Código do Pedido: {self.valor_do_pedido}'
+        return self.codigo_do_pedido
 
 
 

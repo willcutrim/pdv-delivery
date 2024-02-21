@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from .utils import converter_para_int, gerar_codigo_unico
 from .forms import FormPedido, SaidaForm
 from .models import Acai, Adicionais, Caldas, Cremes, Frutas, Outros, RelatorioEntradaSaida, Pedido, Saida
+from .serializer import PedidoSerializer
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Sum
 from rest_framework.response import Response
@@ -185,9 +186,9 @@ def pedido_whatsapp(request):
         dinheiro_valor = request.POST.get('dinheiro_valor', '')
 
         codigo_do_pedido = gerar_codigo_unico()
-
+        # print(codigo_do_pedido)
         objetos_adicionais = [Adicionais.objects.create(nome=nome_adicional) for nome_adicional in adicionais]
-
+        
         pedido = Pedido(
             codigo_do_pedido=codigo_do_pedido,
             tamanho_acai=tamanho_acai,
@@ -298,7 +299,6 @@ def login_page(request):
             user = authenticate(username=username, password=password)
             if user is not None and check_password(password, user.password):
                 login(request, user)
-                print(username, password)
                 return redirect('home')
             else:
                 messages.error(request, 'Nome de usuário ou senha incorretos.')
@@ -355,3 +355,35 @@ def realizar_pedido_sistema(request):
     else:
         form = FormPedido()
     return render(request, 'html/pedido_no_sistema.html', {'form': form, 'tamanho_acai': tamanho_acai})
+
+
+
+class RetornarNumeroPedido(APIView):
+
+    def get(self, request, *args, **kwargs):
+        numero_pedido = Pedido.objects.last()
+        print(numero_pedido.codigo_do_pedido)
+        serializer = PedidoSerializer(numero_pedido)
+        return Response(serializer.data)
+    
+
+@login_required(login_url="login")
+def produtos(request):
+
+    context = {
+        'caldas': Caldas.objects.all(),
+        'cremes': Cremes.objects.all(),
+        'frutas': Frutas.objects.all(),
+        'outros': Outros.objects.all()
+    }
+    return render(request, 'html/produtos.html', context)
+
+
+@login_required(login_url="login")
+def deletar_produto_caldas(request, id):
+
+    if request.method == 'POST':    
+        calda = get_object_or_404(Caldas, id=id)
+        print(f'la ele+ {calda.nome}')
+        # calda.delete()
+        # return redirect('produtos')
