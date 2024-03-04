@@ -4,7 +4,11 @@
 
 {% block title %}Realizar pedido{% endblock %}
 
-
+{% block bar%}
+    <button class="btn" type="button" onclick="visualizarPedidos()">
+        <i class="fa fa-shopping-cart text-white fa-lg" id="cont-pedidos"></i>
+    </button>
+{% endblock bar%}
 {% block content %}
 <div class="container-fluid">
     <div class="card shadow">
@@ -140,6 +144,9 @@
                 <button type="button" class="btn btn-outline-success block" data-toggle="modal" data-backdrop="false" onclick="abrirModal()">
                     Salvar Pedido
                 </button>
+                <button type="button" id="adicionarPedidoBtn" onclick="adicionarPedido()" class="btn btn-outline-success">
+                    <i class="fa fa-plus"></i> add
+                </button>
             </div>
             <div class="modal fade text-center" id="modal-pedido" tabindex="-1" role="dialog" aria-labelledby="myModalLabel8" aria-hidden="true">
                 <div class="modal-dialog" role="document">
@@ -157,11 +164,29 @@
                         <button type="submit" id="add-product" class="btn btn-outline-success" onclick="gerarLinkWhatsApp()">
                             <i class="fa fa-whatsapp"></i> Enviar
                         </button>
+                        <button onclick="limparLocalStorage()">Limpar localStorage</button>
                     </div>
                   </div>
                 </div>
             </div>
         </form>
+    </div>
+    <div class="modal fade text-center" id="modal-pedidos" tabindex="-1" role="dialog" aria-labelledby="myModalLabel8" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header bg-purple white">
+              <h4 class="modal-title" id="myModalLabel8">pedidos adicionados</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body-pedidos" id="body-pedidos">
+                
+            </div>
+            <div class="modal-footer">
+            </div>
+          </div>
+        </div>
     </div>
 </div>
 <script src="{% static 'jquery/jquery-3.6.0.min.js' %} "></script>
@@ -171,6 +196,147 @@
 <script src="{% static 'app-assets/js/scripts/modal/components-modal.min.js' %} "></script>
 <script>
     
+    $(document).ready(function() {
+        function atualizarQuantidadePedidos() {
+            var pedidos = JSON.parse(localStorage.getItem('pedidos'));
+            if (pedidos) {
+                const qtPedidos = pedidos.length;
+                $('#cont-pedidos').text(` ${qtPedidos}`);
+            } else {
+                $('#cont-pedidos').text('0');
+            }
+        }
+    
+        atualizarQuantidadePedidos();
+
+        $('#adicionarPedidoBtn').click(function() {
+            atualizarQuantidadePedidos();
+        });
+    });
+    
+
+
+    function adicionarPedido() {
+        
+        var tamanho = document.getElementById("tamanho").value;
+        var caldas = Array.from(document.getElementById("caldas").selectedOptions).map(option => option.value);
+        var cremes = Array.from(document.getElementById("creme").selectedOptions).map(option => option.value);
+        var frutas = Array.from(document.getElementById("fruta").selectedOptions).map(option => option.value);
+        var outros = Array.from(document.getElementById("outros").selectedOptions).map(option => option.value);
+        var adicionais = Array.from(document.getElementById("adicionais").selectedOptions).map(option => option.value);
+
+       
+        var pedido = {
+            tamanho: tamanho,
+            caldas: caldas,
+            cremes: cremes,
+            frutas: frutas,
+            outros: outros,
+            adicionais: adicionais
+        };
+
+        
+        if (tamanho || caldas.length || cremes.length || frutas.length || outros.length || adicionais.length) {
+           
+            var pedidos = JSON.parse(localStorage.getItem('pedidos')) || [];
+
+           
+            pedidos.push(pedido);
+
+          
+            localStorage.setItem('pedidos', JSON.stringify(pedidos));
+
+            document.getElementById("tamanho").selectedIndex = 0;
+            document.getElementById("caldas").selectedIndex = -1;
+            document.getElementById("creme").selectedIndex = -1;
+            document.getElementById("fruta").selectedIndex = -1;
+            document.getElementById("outros").selectedIndex = -1;
+            document.getElementById("adicionais").selectedIndex = -1;
+
+            alert("Pedido adicionado com sucesso!");
+        } else {
+            alert("Por favor, selecione pelo menos um item para adicionar ao pedido.");
+        }
+    }
+
+
+
+
+    function visualizarPedidos() {
+        var pedidos = JSON.parse(localStorage.getItem('pedidos'));
+
+        if (pedidos && pedidos.length > 0) {
+            $("#modal-pedidos").modal('show');
+
+            $('#body-pedidos').empty(); 
+
+            var pedidosFormatados = pedidos.map(function(pedido){
+                return pedido;
+            });
+
+            for(var i = 0; i < pedidosFormatados.length; i++){
+                const pedidoId = 'pedido_' + i;
+                const addPedidos = `
+                    <div id="${pedidoId}" class="pedido-item p-1 rounded-2">
+                        <div class="card">
+                            <div class="d-flex justify-content-between card-header align-items-center">
+                                <h4 class="card-title"><strong>tamanho: ${pedidosFormatados[i].tamanho}</strong></h4>
+                                <button class="btn btn-danger" type="button" id="deletarPedidoId" onclick="deletarPedido(${i}, '${pedidoId}')">
+                                    <i class="icon-trash"></i>
+                                </button>
+                            </div>
+                            <div class="card-body text-left">
+                                Caldas: ${pedidosFormatados[i].caldas.length > 0 ? pedidosFormatados[i].caldas : "-----"}<br>
+                                Cremes: ${pedidosFormatados[i].cremes.length > 0 ? pedidosFormatados[i].cremes : "-----"}<br>
+                                Frutas: ${pedidosFormatados[i].frutas.length > 0 ? pedidosFormatados[i].frutas : "-----"}<br>
+                                Outros: ${pedidosFormatados[i].outros.length > 0 ? pedidosFormatados[i].outros : "-----"}<br>
+                                Adicionais: ${pedidosFormatados[i].adicionais.length > 0 ? pedidosFormatados[i].adicionais : "-----"}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                $('#body-pedidos').append(addPedidos); 
+            }
+        } else {
+            alert("Nenhum pedido foi adicionado ainda.");
+        }
+    }
+
+    function deletarPedido(index, pedidoId) {
+        var pedidos = JSON.parse(localStorage.getItem('pedidos'));
+        
+        if (index >= 0 && index < pedidos.length) {
+            pedidos.splice(index, 1);
+            localStorage.setItem('pedidos', JSON.stringify(pedidos));
+            $('#' + pedidoId).remove();
+
+            function atualizarQuantidadePedidos() {
+                var pedidos = JSON.parse(localStorage.getItem('pedidos'));
+                if (pedidos) {
+                    const qtPedidos = pedidos.length;
+                    $('#cont-pedidos').text(` ${qtPedidos}`);
+                } else {
+                    $('#cont-pedidos').text('0');
+                }
+            }
+        
+            atualizarQuantidadePedidos();
+    
+            $('#deletarPedidoId').click(function() {
+                atualizarQuantidadePedidos();
+            });
+        }
+    }
+    
+    
+
+
+    function limparLocalStorage() {
+        // Limpar todos os dados do localStorage
+        localStorage.clear();
+        alert("Todos os dados foram removidos do localStorage.");
+    }
+
     $(document).ready(function() {
         $('.select2').select2();
     });
@@ -293,6 +459,7 @@
         }
     }
     
+    /*
     function retornarNumeroPedido() {
         return fetch('http://127.0.0.1:8000/numero-de-pedido')
             .then(response => {
@@ -310,15 +477,15 @@
                 throw error; // Rejeita a promessa com o erro
             });
     }
-    
     async function minhaFuncao() {
         try {
             const numeroPedido = await retornarNumeroPedido();
-           return numeroPedido
+            return numeroPedido
         } catch (error) {
             console.error('Ocorreu um erro:', error);
         }
     }
+    */
     
 
     function gerarLinkWhatsApp() {
@@ -343,7 +510,7 @@
         var inputAdicionais = $("input[name='input_adicionais']:checked").val() || '-----';
         var dinheiroValor = $("#dinheiro").val() || '-----';
 
-        const numero = minhaFuncao();
+        //const numero = minhaFuncao();
         
 
         if (bairro === '-----' || rua === '-----' || numeroDaCasa === '-----') {
@@ -351,7 +518,7 @@
         } else {
             if (numeroWhatsApp && numeroWhatsApp.match(/^\d+$/)) {
                 var pedidos = [
-                    `======== PEDIDO *${numero}* ========`,
+                    `======== PEDIDO ========`,
                     `Tamanho Açaí: *${tamanhoAcai || '-----'}*`,
                     `Frutas: *${fruta.length > 0 ? fruta.join(", ") : '-----'}*`,
                     `Caldas: *${caldas.length > 0 ? caldas.join(", ") : '-----'}*`,

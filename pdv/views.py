@@ -159,13 +159,20 @@ def deletar_relatorio(request, id):
 
 
 
-    
-TAMANHO_VALORES = {
-    '300 ML': 12,
-    '400 ML': 15,
-    '500 ML': 18,
-    'Potão': 20,
-}
+for tamanho in Acai.objects.all():
+    print(tamanho.preco_do_acai)
+    TAMANHO_VALORES = {
+        tamanho.tamaho_do_acai: tamanho.preco_do_acai,
+    }
+
+
+# TAMANHO_VALORES = {
+#         '300 ML': 12,
+#         '400 ML': 15,
+#         '500 ML': 18,
+#         'Potão': 20,
+#     }
+
 
 def pedido_whatsapp(request):
     
@@ -204,18 +211,19 @@ def pedido_whatsapp(request):
         
         if tamanho_acai in TAMANHO_VALORES:
             pedido.valor_do_pedido = Decimal(TAMANHO_VALORES[tamanho_acai]) + Decimal(2)
+            print(TAMANHO_VALORES, pedido.valor_do_pedido)
 
         # Adiciona 2 ao valor total para cada adicional escolhido
         for adicional in objetos_adicionais:
             pedido.valor_do_pedido += Decimal(2)
        
-        pedido.save()
+        # pedido.save()
 
-        pedido.caldas.set(Caldas.objects.filter(nome__in=caldas))
-        pedido.creme.set(Cremes.objects.filter(nome__in=cremes))
-        pedido.fruta.set(Frutas.objects.filter(nome__in=frutas))
-        pedido.outros.set(Outros.objects.filter(nome__in=outros))
-        pedido.adicionais.set(objetos_adicionais)
+        # pedido.caldas.set(Caldas.objects.filter(nome__in=caldas))
+        # pedido.creme.set(Cremes.objects.filter(nome__in=cremes))
+        # pedido.fruta.set(Frutas.objects.filter(nome__in=frutas))
+        # pedido.outros.set(Outros.objects.filter(nome__in=outros))
+        # pedido.adicionais.set(objetos_adicionais)
 
 
     context = {
@@ -358,13 +366,13 @@ def realizar_pedido_sistema(request):
 
 
 
-class RetornarNumeroPedido(APIView):
+# class RetornarNumeroPedido(APIView):
 
-    def get(self, request, *args, **kwargs):
-        numero_pedido = Pedido.objects.last()
-        print(numero_pedido.codigo_do_pedido)
-        serializer = PedidoSerializer(numero_pedido)
-        return Response(serializer.data)
+#     def get(self, request, *args, **kwargs):
+#         numero_pedido = Pedido.objects.last()
+#         print(numero_pedido.codigo_do_pedido)
+#         serializer = PedidoSerializer(numero_pedido)
+#         return Response(serializer.data)
     
 
 @login_required(login_url="login")

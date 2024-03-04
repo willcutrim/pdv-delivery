@@ -8,7 +8,7 @@ urlpatterns = [
     path('cadastro_saida', views.cadastro_saida, name='cadastro-saida'),
     path('deletar_entrada_saida<int:id>', views.deletar_relatorio, name='deletar-entrada-saida'),
 
-    path('realizar_pedido_cliente', views.pedido_whatsapp, name='realizar-pedido-cliente'),
+    path('realizar-pedido-cliente', views.pedido_whatsapp, name='realizar-pedido-cliente'),
 
     path('pedidos-feitos', views.pedidos_feitos, name='pedidos-feitos'),
 
@@ -21,7 +21,7 @@ urlpatterns = [
 
     path('realizar-pedido', views.realizar_pedido_sistema, name='realizar-pedido'),
 
-    path('numero-de-pedido', views.RetornarNumeroPedido.as_view(), name='numero-de-pedido'),
+    # path('numero-de-pedido', views.RetornarNumeroPedido.as_view(), name='numero-de-pedido'),
 
     path('produtos', views.produtos, name='produtos'),
 
