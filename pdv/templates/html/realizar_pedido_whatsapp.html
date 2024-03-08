@@ -159,7 +159,9 @@
                       </button>
                     </div>
                     <div class="modal-body text-left" id="body-modal">
-                      
+                      <div class="col-12" id="content-body">
+
+                      </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" id="enviarPedido"  class="btn btn-outline-success">
@@ -370,7 +372,6 @@
     
     function limparLocalStorage() {
         localStorage.clear();
-        alert("Todos os dados foram removidos do localStorage.");
     }
 
 
@@ -399,7 +400,7 @@
     }
 
     function calcTotal(adicionais) {
-        console.log(adicionais.length);
+        
         if (adicionais.length > 0){
             var adicionaisArray = adicionais.split(',').map(function (item) {
                 return item.trim();
@@ -445,55 +446,78 @@
                   tamanhoAcai === '500 ML' ? 18 :
                   tamanhoAcai === 'Potão' ? 20 :
                   'Valor não correspondente';
-                  
+          
             var pedidos = JSON.parse(localStorage.getItem('pedidos'));
             var adicionais = adicionais === '' ? '' : adicionais;
             var totalAdicionais = calcTotal(adicionais)
-
+           
             var total = valorExibido + totalAdicionais + 2;
 
             var pedidosFormatados = pedidos.map(function(pedido){
                 return pedido;
             });
+            
 
-            for(var i = 0; i < pedidosFormatados.length; i++){
-                var cont = i + 1
+
+            var taxaDeEntrega = 2; // Defina a taxa de entrega aqui
+
+            // Calcular o valor total de todos os pedidos
+            var totalPedidoGeral = 0;
+            for (var i = 0; i < pedidosFormatados.length; i++) {
+                var valorExibido = pedidosFormatados[i].tamanho === '300 ML' ? 12 :
+                    pedidosFormatados[i].tamanho === '400 ML' ? 15 :
+                    pedidosFormatados[i].tamanho === '500 ML' ? 18 :
+                    pedidosFormatados[i].tamanho === 'Potão' ? 20 :
+                    'Valor não correspondente';
+
+                var adicionais = pedidosFormatados[i].adicionais.length; // Número de adicionais
+                var totalAdicionais = adicionais * 2; // Valor total dos adicionais
+                var totalPedidoIndividual = valorExibido + totalAdicionais; // Valor total do pedido individual sem a taxa de entrega
+                totalPedidoGeral += totalPedidoIndividual;
+                
+                var cont = i + 1;
                 const pedidoId = 'pedido_' + i;
                 const addPedidos = `
-                <details id="${pedidoId}" style="border: 1px solid #ccc; border-radius: 5px; margin-bottom: 10px; padding: 10px;">
-                    <summary stile="cursor: pointer;">
-                        <strong>${pedidosFormatados[i].tamanho} #${cont}</strong>
-                    </summary>
-                    <div class="pedido-item p-1 rounded-2">
-                        <div class="card">
-                            <div class="d-flex justify-content-between card-header align-items-center">
-                                <h4 class="card-title"><strong>tamanho: ${pedidosFormatados[i].tamanho}</strong></h4>
-                                <button class="btn btn-danger" type="button" id="deletarPedidoId" onclick="deletarPedido(${i}, '${pedidoId}')">
-                                    <i class="icon-trash"></i>
-                                </button>
-                            </div>
-                            <div class="card-body text-left">
-                                Caldas: ${pedidosFormatados[i].caldas.length > 0 ? pedidosFormatados[i].caldas : "-----"}<br>
-                                Cremes: ${pedidosFormatados[i].cremes.length > 0 ? pedidosFormatados[i].cremes : "-----"}<br>
-                                Frutas: ${pedidosFormatados[i].frutas.length > 0 ? pedidosFormatados[i].frutas : "-----"}<br>
-                                Outros: ${pedidosFormatados[i].outros.length > 0 ? pedidosFormatados[i].outros : "-----"}<br>
-                                Adicionais: ${pedidosFormatados[i].adicionais.length > 0 ? pedidosFormatados[i].adicionais : "-----"}
-                            </div>
-                            <div class="card-footer">
-                                Valor: <strong>${
-                                    pedidosFormatados[i].tamanho === '300 ML' ? 'R$ 12' :
-                                    pedidosFormatados[i].tamanho === '400 ML' ? 'R$ 15' :
-                                    pedidosFormatados[i].tamanho === '500 ML' ? 'R$ 18' :
-                                    pedidosFormatados[i].tamanho === 'Potão' ? 'R$ 20' :
-                                    'Tamanho inválido'
-                                }</strong>
+                    <details id="${pedidoId}" style="border: 1px solid #ccc; border-radius: 5px; margin-bottom: 10px; padding: 10px;">
+                        <summary stile="cursor: pointer;">
+                            <strong>${pedidosFormatados[i].tamanho} #${cont}</strong>
+                        </summary>
+                        <div class="pedido-item p-1 rounded-2">
+                            <div class="card">
+                                <div class="d-flex justify-content-between card-header align-items-center">
+                                    <h4 class="card-title"><strong>tamanho: ${pedidosFormatados[i].tamanho}</strong></h4>
+                                    <button class="btn btn-danger" type="button" id="deletarPedidoId" onclick="deletarPedido(${i}, '${pedidoId}')">
+                                        <i class="icon-trash"></i>
+                                    </button>
+                                </div>
+                                <div class="card-body text-left">
+                                    Caldas: ${pedidosFormatados[i].caldas.length > 0 ? pedidosFormatados[i].caldas : "-----"}<br>
+                                    Cremes: ${pedidosFormatados[i].cremes.length > 0 ? pedidosFormatados[i].cremes : "-----"}<br>
+                                    Frutas: ${pedidosFormatados[i].frutas.length > 0 ? pedidosFormatados[i].frutas : "-----"}<br>
+                                    Outros: ${pedidosFormatados[i].outros.length > 0 ? pedidosFormatados[i].outros : "-----"}<br>
+                                    Adicionais: ${pedidosFormatados[i].adicionais.length > 0 ? pedidosFormatados[i].adicionais : "-----"}
+                                </div>
+                                <div class="card-footer">
+                                    Valor: <strong>${totalPedidoIndividual}</strong>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </details>
+                    </details>
                 `;
+
                 $('#body-modal').append(addPedidos);
-            }   
+            }
+            totalPedidoGeral += taxaDeEntrega;
+            
+            const totalGeralDiv = `
+                <div class="col-12">
+                    <strong>Taxa de entrega: $${taxaDeEntrega}</strong><br>
+                    <strong>Valor total geral dos pedidos: $${totalPedidoGeral.toFixed(2)}</strong>
+                </div>
+            `;
+
+            $('#body-modal').append(totalGeralDiv);
+
         }
     }
     
@@ -593,7 +617,7 @@
                     pedidos.push(`\nDinheiro: *R$ ${dinheiroValor}*`);
                 }
 
-                /*
+                
                 var url =  'https://wa.me/' + numeroWhatsApp + '?text=' + encodeURIComponent(pedidos);
                 var isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
             
@@ -602,42 +626,7 @@
                 } else {
                     window.open(url, '_blank');
                 }
-*/
 
-                /*          
-                var pedidos = [
-                    `======== PEDIDO ========`,
-                    `Tamanho Açaí: *${tamanhoAcai || '-----'}*`,
-                    `Frutas: *${fruta.length > 0 ? fruta.join(", ") : '-----'}*`,
-                    `Caldas: *${caldas.length > 0 ? caldas.join(", ") : '-----'}*`,
-                    `Cremes: *${creme.length > 0 ? creme.join(", ") : '-----'}*`,
-                    `Outros: *${outros.length > 0 ? outros.join(", ") : '-----'}*`,
-                    inputAdicionais ? 'Adicionais: *' + (adicionais.join(", ") || '-----') + '*' : '',
-                    '\n',
-                    '======== ENDEREÇO ========',
-                    `Bairro: *${bairro}*`,
-                    `Rua: *${rua}*`,
-                    `Numero da casa: *${numeroDaCasa}*`,
-                    `Complemento: *${complemento}*\n`,
-                    '=== INFOR. DO CLIENTE E PAGAMENTO ===',
-                    `Nome do cliente: *${nome}*`,
-                    `Forma de pagamento: *${formaDePagamento}*`,
-                ];
-                if (formaDePagamento === 'Dinheiro') {
-                    pedidos.push(`Dinheiro: *R$ ${dinheiroValor}*`);
-                }
-                
-                var mensagem = pedidos.join("\n");
-                var url = 'https://wa.me/' + numeroWhatsApp + '?text=' + encodeURIComponent(mensagem);
-                
-                var isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-                
-                if (isIOS) {
-                    window.open(url, '_blank');
-                } else {
-                    window.open(url, '_blank');
-                }
-                */
             } else {
                 alert('Número de WhatsApp inválido. Por favor, insira um número válido.');
             }
@@ -733,8 +722,11 @@
                 data: JSON.stringify(dataToSend),
                 contentType: 'application/json',
                 success: function(response) {
-                    console.log(response);
-                    alert('Pedido enviado com sucesso!');
+                    gerarLinkWhatsApp()
+                    limparLocalStorage()
+
+                    location.reload();
+                    
                 },
                 error: function(xhr, status, error) {
                     console.error(error);

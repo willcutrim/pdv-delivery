@@ -399,11 +399,10 @@ def salvar_pedido(request):
         data = json.loads(request.body)
         pedidos = data.get('pedidos', [])
 
-
         for pedido_data in pedidos:
             codigo_do_pedido = gerar_codigo_unico()
             pedido = Pedido()
-            print(data)
+
             pedido.tamanho_acai = pedido_data['tamanho']
             pedido.bairro = data.get('bairro', '')
             pedido.rua = data.get('rua', '')
@@ -414,23 +413,30 @@ def salvar_pedido(request):
             pedido.dinheiro_valor = data.get('dinheiroValor', '')
             pedido.codigo_do_pedido = codigo_do_pedido
 
-            # Calcular o valor total do pedido
-            valor_total = 0
-            valor_total += float(pedido_data.get('valor_do_pedido', '0'))
+            # Mapeamento de tamanho de açaí para preço
+            precos = {
+                '300 ML': 12,
+                '400 ML': 15,
+                '500 ML': 18,
+                'Potão': 20
+            }
 
+            # Calcular o valor total do pedido
+            valor_total = precos.get(pedido.tamanho_acai, 0)  # Obtém o preço do tamanho do açaí ou 0 se não existir
+            
             adicionais_data = pedido_data.get('adicionais', [])
             valor_total += len(adicionais_data) * 2  # Adicionar 2 reais para cada adicional
-            
-            pedido.valor_do_pedido = str(valor_total)  # Atualizar o valor total do pedido
+
+            pedido.valor_do_pedido = str(valor_total + 2)  # Atualizar o valor total do pedido junto da taxa de entrega(Gambiarra que nunca deverá ser mexida)
 
             pedido.save()
 
             # Adicionar valores ManyToMany após salvar o pedido
-            caldas = [Caldas.objects.get_or_create(nome=calda_nome)[0] for calda_nome in pedido_data['caldas']]
-            cremes = [Cremes.objects.get_or_create(nome=creme_nome)[0] for creme_nome in pedido_data['cremes']]
-            outros = [Outros.objects.get_or_create(nome=outro_nome)[0] for outro_nome in pedido_data['outros']]
-            fruta = [Frutas.objects.get_or_create(nome=fruta_nome)[0] for fruta_nome in pedido_data['frutas']]
-            adicionais = [Adicionais.objects.get_or_create(nome=adicional_nome)[0] for adicional_nome in pedido_data['adicionais']]
+            caldas = [Caldas.objects.get_or_create(nome=calda_nome)[0] for calda_nome in pedido_data.get('caldas', [])]
+            cremes = [Cremes.objects.get_or_create(nome=creme_nome)[0] for creme_nome in pedido_data.get('cremes', [])]
+            outros = [Outros.objects.get_or_create(nome=outro_nome)[0] for outro_nome in pedido_data.get('outros', [])]
+            fruta = [Frutas.objects.get_or_create(nome=fruta_nome)[0] for fruta_nome in pedido_data.get('frutas', [])]
+            adicionais = [Adicionais.objects.get_or_create(nome=adicional_nome)[0] for adicional_nome in adicionais_data]
 
             pedido.caldas.set(caldas)
             pedido.creme.set(cremes)
@@ -441,6 +447,7 @@ def salvar_pedido(request):
         return JsonResponse({'mensagem': 'Pedidos salvos com sucesso.'})
 
     return JsonResponse({'mensagem': 'Requisição inválida.'}, status=400)
+
 
 
 # @csrf_exempt
