@@ -26,4 +26,6 @@ urlpatterns = [
     path('produtos', views.produtos, name='produtos'),
 
     path('deletar-caldas/<int:id>', views.deletar_produto_caldas, name='deletar-caldas'),
+
+    path('salvar_pedido/', views.salvar_pedido, name='salvar_pedido'),
 ]

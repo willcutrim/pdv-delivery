@@ -158,14 +158,13 @@
                         <span aria-hidden="true">&times;</span>
                       </button>
                     </div>
-                    <div class="modal-body" id="body-modal">
+                    <div class="modal-body text-left" id="body-modal">
                       
                     </div>
                     <div class="modal-footer">
-                        <button type="button" id="add-product" class="btn btn-outline-success" onclick="gerarLinkWhatsApp()">
+                        <button type="button" id="enviarPedido"  class="btn btn-outline-success">
                             <i class="fa fa-whatsapp"></i> Enviar
                         </button>
-                        <button onclick="limparLocalStorage()">Limpar localStorage</button>
                     </div>
                   </div>
                 </div>
@@ -181,7 +180,7 @@
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
-            <div class="modal-body-pedidos" id="body-pedidos">
+            <div class="modal-body-pedidos text-left p-1" id="body-pedidos">
                 
             </div>
             <div class="modal-footer">
@@ -250,8 +249,6 @@
     }
 
 
-
-
     function visualizarPedidos() {
         var pedidos = JSON.parse(localStorage.getItem('pedidos'));
 
@@ -265,9 +262,14 @@
             });
 
             for(var i = 0; i < pedidosFormatados.length; i++){
+                var cont = i + 1;
                 const pedidoId = 'pedido_' + i;
                 const addPedidos = `
-                    <div id="${pedidoId}" class="pedido-item p-1 rounded-2">
+                <details id="${pedidoId}" style="border: 1px solid #ccc; border-radius: 5px; margin-bottom: 10px; padding: 10px;">
+                    <summary stile="cursor: pointer;">
+                        <strong>${pedidosFormatados[i].tamanho} #${cont}</strong>
+                    </summary>
+                    <div class="pedido-item p-1 rounded-2">
                         <div class="card">
                             <div class="d-flex justify-content-between card-header align-items-center">
                                 <h4 class="card-title"><strong>tamanho: ${pedidosFormatados[i].tamanho}</strong></h4>
@@ -282,8 +284,18 @@
                                 Outros: ${pedidosFormatados[i].outros.length > 0 ? pedidosFormatados[i].outros : "-----"}<br>
                                 Adicionais: ${pedidosFormatados[i].adicionais.length > 0 ? pedidosFormatados[i].adicionais : "-----"}
                             </div>
+                            <div class="card-footer">
+                                Valor: <strong>${
+                                    pedidosFormatados[i].tamanho === '300 ML' ? 'R$ 12' :
+                                    pedidosFormatados[i].tamanho === '400 ML' ? 'R$ 15' :
+                                    pedidosFormatados[i].tamanho === '500 ML' ? 'R$ 18' :
+                                    pedidosFormatados[i].tamanho === 'Potão' ? 'R$ 20' :
+                                    'Tamanho inválido'
+                                }</strong>
+                            </div>
                         </div>
                     </div>
+                </details>
                 `;
                 $('#body-pedidos').append(addPedidos); 
             }
@@ -356,12 +368,11 @@
     }
     
     
-
-
     function limparLocalStorage() {
         localStorage.clear();
         alert("Todos os dados foram removidos do localStorage.");
     }
+
 
     $(document).ready(function() {
         $('.select2').select2();
@@ -435,56 +446,56 @@
                   tamanhoAcai === 'Potão' ? 20 :
                   'Valor não correspondente';
                   
-                  
+            var pedidos = JSON.parse(localStorage.getItem('pedidos'));
             var adicionais = adicionais === '' ? '' : adicionais;
             var totalAdicionais = calcTotal(adicionais)
 
             var total = valorExibido + totalAdicionais + 2;
 
-        
-            const newRow = `
-                <h6 class="text-left">Tamanho do copo:<strong> ${tamanhoAcai}</strong></h6>
-                <h6 class="text-left">Caldas:</h6>
-                <ul class="text-left"><li>
-                    <strong>${caldas}</li></strong>
-                </ul>
-                <h6 class="text-left">Cremes:</h6>
-                <ul class="text-left">
-                    <strong><li>${creme}</li></strong>
-                </ul>
-                <h6 class="text-left">Frutas:</h6>
-                <ul class="text-left">
-                    <strong><li>${fruta}</li></strong>
-                </ul>
-                <h6 class="text-left">Outros:</h6>
-                <ul class="text-left">
-                    <strong><li>${outros}</li></strong>
-                </ul>
-                <h6 class="text-left">Adicionais:</h6>
-                <ul class="text-left">
-                    <strong><li>${adicionais}</li></strong>
-                </ul>
-                <hr>
-                <div class="text-left">
-                    <h5 class="font-bold">Endereço:</h5>
-                    <p>Bairro: <strong>${bairro}</strong></p>
-                    <p>Rua: <strong>${rua}</strong></p>
-                    <p>Nº: <strong>${numeroDaCasa}</strong></p>
-                    <p>Ponto de referência: <strong>${complemento}</strong></p>
-                </div>
-                <hr>
-                <div class="text-left">
-                    Valor do açai: <strong>R$ ${valorExibido}</strong><br>
-                    Adicionais: ${totalAdicionais > 0 ? `<strong>R$ +${totalAdicionais}</strong> <br>` : '-----<br>'}
-                    Taxa de entrega: <strong>R$ +2</strong> <br>
-                    Total: <strong>R$ ${total}</strong>
-                </div>
-            `;
-    
-            $('#body-modal').append(newRow);    
+            var pedidosFormatados = pedidos.map(function(pedido){
+                return pedido;
+            });
+
+            for(var i = 0; i < pedidosFormatados.length; i++){
+                var cont = i + 1
+                const pedidoId = 'pedido_' + i;
+                const addPedidos = `
+                <details id="${pedidoId}" style="border: 1px solid #ccc; border-radius: 5px; margin-bottom: 10px; padding: 10px;">
+                    <summary stile="cursor: pointer;">
+                        <strong>${pedidosFormatados[i].tamanho} #${cont}</strong>
+                    </summary>
+                    <div class="pedido-item p-1 rounded-2">
+                        <div class="card">
+                            <div class="d-flex justify-content-between card-header align-items-center">
+                                <h4 class="card-title"><strong>tamanho: ${pedidosFormatados[i].tamanho}</strong></h4>
+                                <button class="btn btn-danger" type="button" id="deletarPedidoId" onclick="deletarPedido(${i}, '${pedidoId}')">
+                                    <i class="icon-trash"></i>
+                                </button>
+                            </div>
+                            <div class="card-body text-left">
+                                Caldas: ${pedidosFormatados[i].caldas.length > 0 ? pedidosFormatados[i].caldas : "-----"}<br>
+                                Cremes: ${pedidosFormatados[i].cremes.length > 0 ? pedidosFormatados[i].cremes : "-----"}<br>
+                                Frutas: ${pedidosFormatados[i].frutas.length > 0 ? pedidosFormatados[i].frutas : "-----"}<br>
+                                Outros: ${pedidosFormatados[i].outros.length > 0 ? pedidosFormatados[i].outros : "-----"}<br>
+                                Adicionais: ${pedidosFormatados[i].adicionais.length > 0 ? pedidosFormatados[i].adicionais : "-----"}
+                            </div>
+                            <div class="card-footer">
+                                Valor: <strong>${
+                                    pedidosFormatados[i].tamanho === '300 ML' ? 'R$ 12' :
+                                    pedidosFormatados[i].tamanho === '400 ML' ? 'R$ 15' :
+                                    pedidosFormatados[i].tamanho === '500 ML' ? 'R$ 18' :
+                                    pedidosFormatados[i].tamanho === 'Potão' ? 'R$ 20' :
+                                    'Tamanho inválido'
+                                }</strong>
+                            </div>
+                        </div>
+                    </div>
+                </details>
+                `;
+                $('#body-modal').append(addPedidos);
+            }   
         }
     }
-    
     
 
     function gerarLinkWhatsApp() {
@@ -516,7 +527,7 @@
         } else {
             if (numeroWhatsApp && numeroWhatsApp.match(/^\d+$/)) {
                 var pedidos = JSON.parse(localStorage.getItem('pedidos'));
-
+                console.log(pedidos)
                 var pedidosFormatados = pedidos.map(function(pedido){
                     return pedido;
                 });
@@ -565,9 +576,7 @@
                 }
                 
                 var pedidos = receberDadosPedidos()
-                
-
-
+                console.log(pedidos)
                 pedidos.push(
                     '\n======== ENDEREÇO ========\n'+
                     `Bairro: *${bairro}*\n`+
@@ -584,7 +593,7 @@
                     pedidos.push(`\nDinheiro: *R$ ${dinheiroValor}*`);
                 }
 
-                
+                /*
                 var url =  'https://wa.me/' + numeroWhatsApp + '?text=' + encodeURIComponent(pedidos);
                 var isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
             
@@ -593,10 +602,9 @@
                 } else {
                     window.open(url, '_blank');
                 }
-/*  
-                
+*/
 
-                
+                /*          
                 var pedidos = [
                     `======== PEDIDO ========`,
                     `Tamanho Açaí: *${tamanhoAcai || '-----'}*`,
@@ -693,7 +701,48 @@
     });
      
 
-    
+    $(document).ready(function() {
+        $('#enviarPedido').click(function() {
+
+            var bairro = $("#bairro").val() || '-----';
+            var rua = $("#rua").val() || '-----';
+            var numeroDaCasa = $("#numeroDaCasa").val() || '-----';
+            var complemento = $("#Complemento").val() || '-----';
+
+            var nome = $("#nome").val() || '-----';
+            
+            var formaDePagamento = $("input[name='formaDePagamento']:checked").val() || '-----';
+            var dinheiroValor = $("#dinheiro").val() || '-----';
+            var pedidos = JSON.parse(localStorage.getItem('pedidos'));
+
+            var dataToSend = {
+                pedidos: pedidos,
+                bairro: bairro,
+                rua: rua,
+                numeroDaCasa: numeroDaCasa,
+                complemento: complemento,
+                nome: nome,
+                formaDePagamento: formaDePagamento,
+                dinheiroValor: dinheiroValor
+            };
+
+
+            $.ajax({
+                type: 'POST',
+                url: '/salvar_pedido/',
+                data: JSON.stringify(dataToSend),
+                contentType: 'application/json',
+                success: function(response) {
+                    console.log(response);
+                    alert('Pedido enviado com sucesso!');
+                },
+                error: function(xhr, status, error) {
+                    console.error(error);
+                    alert('Erro ao enviar pedido.');
+                }
+            });
+        });
+    });
 
 </script>
 {% endblock content %}

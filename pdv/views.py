@@ -5,14 +5,9 @@ from django.shortcuts import get_object_or_404, redirect, render
 from .utils import converter_para_int, gerar_codigo_unico
 from .forms import FormPedido, SaidaForm
 from .models import Acai, Adicionais, Caldas, Cremes, Frutas, Outros, RelatorioEntradaSaida, Pedido, Saida
-from .serializer import PedidoSerializer
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Sum
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework import status
 
-import random
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
@@ -22,7 +17,8 @@ from django.http import HttpResponseRedirect
 from django.utils import timezone
 from datetime import timedelta
 
-
+from django.views.decorators.csrf import csrf_exempt
+import json
 
 
 
@@ -395,3 +391,116 @@ def deletar_produto_caldas(request, id):
         print(f'la ele+ {calda.nome}')
         # calda.delete()
         # return redirect('produtos')
+
+
+@csrf_exempt
+def salvar_pedido(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        pedidos = data.get('pedidos', [])
+
+
+        for pedido_data in pedidos:
+            codigo_do_pedido = gerar_codigo_unico()
+            pedido = Pedido()
+            print(data)
+            pedido.tamanho_acai = pedido_data['tamanho']
+            pedido.bairro = data.get('bairro', '')
+            pedido.rua = data.get('rua', '')
+            pedido.numero_da_casa = data.get('numeroDaCasa', '')
+            pedido.complemento = data.get('complemento', '')
+            pedido.nome = data.get('nome', '')
+            pedido.forma_de_pagamento = data.get('formaDePagamento', '')
+            pedido.dinheiro_valor = data.get('dinheiroValor', '')
+            pedido.codigo_do_pedido = codigo_do_pedido
+
+            # Calcular o valor total do pedido
+            valor_total = 0
+            valor_total += float(pedido_data.get('valor_do_pedido', '0'))
+
+            adicionais_data = pedido_data.get('adicionais', [])
+            valor_total += len(adicionais_data) * 2  # Adicionar 2 reais para cada adicional
+            
+            pedido.valor_do_pedido = str(valor_total)  # Atualizar o valor total do pedido
+
+            pedido.save()
+
+            # Adicionar valores ManyToMany após salvar o pedido
+            caldas = [Caldas.objects.get_or_create(nome=calda_nome)[0] for calda_nome in pedido_data['caldas']]
+            cremes = [Cremes.objects.get_or_create(nome=creme_nome)[0] for creme_nome in pedido_data['cremes']]
+            outros = [Outros.objects.get_or_create(nome=outro_nome)[0] for outro_nome in pedido_data['outros']]
+            fruta = [Frutas.objects.get_or_create(nome=fruta_nome)[0] for fruta_nome in pedido_data['frutas']]
+            adicionais = [Adicionais.objects.get_or_create(nome=adicional_nome)[0] for adicional_nome in pedido_data['adicionais']]
+
+            pedido.caldas.set(caldas)
+            pedido.creme.set(cremes)
+            pedido.outros.set(outros)
+            pedido.fruta.set(fruta)
+            pedido.adicionais.set(adicionais)
+
+        return JsonResponse({'mensagem': 'Pedidos salvos com sucesso.'})
+
+    return JsonResponse({'mensagem': 'Requisição inválida.'}, status=400)
+
+
+# @csrf_exempt
+# def salvar_pedido(request):
+#     if request.method == 'POST':
+#         data = json.loads(request.body)
+#         pedidos = data.get('pedidos', [])
+
+#         lista = []
+#         for pedido_data in pedidos:
+            
+#             codigo_do_pedido = gerar_codigo_unico()
+
+#             print(pedido_data)
+#             pedido = Pedido()
+
+#             pedido.codigo_do_pedido = pedido_data.get('codigo_do_pedido', '')
+#             pedido.valor_do_pedido = pedido_data.get('valor_do_pedido', '')
+#             pedido.tamanho_acai = pedido_data.get('tamanho_acai', '')
+#             pedido.bairro = pedido_data.get('bairro', '')
+#             pedido.rua = pedido_data.get('rua', '')
+#             pedido.numero_da_casa = pedido_data.get('numero_da_casa', '')
+#             pedido.complemento = pedido_data.get('complemento', '')
+#             pedido.nome = pedido_data.get('nome', '')
+#             pedido.forma_de_pagamento = pedido_data.get('forma_de_pagamento', '')
+#             pedido.dinheiro_valor = pedido_data.get('dinheiro_valor', '')
+#             pedido.codigo_do_pedido = codigo_do_pedido
+
+#             pedido.save()
+
+#             # Adicionando Caldas
+#             caldas_data = pedido_data.get('caldas', [])
+#             for calda_nome in caldas_data:
+#                 calda, _ = Caldas.objects.get_or_create(nome=calda_nome)
+#                 pedido.caldas.add(calda)
+
+#             # Adicionando Cremes
+#             cremes_data = pedido_data.get('creme', [])
+#             for creme_nome in cremes_data:
+#                 creme, _ = Cremes.objects.get_or_create(nome=creme_nome)
+#                 pedido.creme.add(creme)
+
+#             # Adicionando Frutas
+#             frutas_data = pedido_data.get('fruta', [])
+#             for fruta_nome in frutas_data:
+#                 fruta, _ = Frutas.objects.get_or_create(nome=fruta_nome)
+#                 pedido.fruta.add(fruta)
+
+#             # Adicionando Outros
+#             outros_data = pedido_data.get('outros', [])
+#             for outro_nome in outros_data:
+#                 outro, _ = Outros.objects.get_or_create(nome=outro_nome)
+#                 pedido.outros.add(outro)
+
+#             # Adicionando Adicionais
+#             adicionais_data = pedido_data.get('adicionais', [])
+#             for adicional_nome in adicionais_data:
+#                 adicional, _ = Adicionais.objects.get_or_create(nome=adicional_nome)
+#                 pedido.adicionais.add(adicional)
+
+#         return JsonResponse({'mensagem': 'Pedidos salvos com sucesso.'})
+
+#     return JsonResponse({'mensagem': 'Requisição inválida.'}, status=400)
