@@ -1,12 +1,20 @@
+# Use a imagem base do Python
+FROM python:3.10
 
-FROM python:3.9
+# Defina variáveis de ambiente
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
 
-WORKDIR /app
+# Defina o diretório de trabalho no container
+WORKDIR /code
 
-COPY requirements.txt .
+# Instale as dependências do sistema
+RUN apt-get update && \
+    apt-get install -y postgresql-client
 
-RUN pip install -r requirements.txt
+# Instale as dependências Python
+COPY requirements.txt /code/
+RUN pip install --upgrade pip && pip install -r requirements.txt 
 
-COPY . .
-
-CMD ["python3", "manage.py", "runserver", "127.0.0.1:8000"]
+# Copie o código do aplicativo para o contêiner
+COPY . /code/

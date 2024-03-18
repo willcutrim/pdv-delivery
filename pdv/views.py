@@ -162,12 +162,12 @@ for tamanho in Acai.objects.all():
     }
 
 
-# TAMANHO_VALORES = {
-#         '300 ML': 12,
-#         '400 ML': 15,
-#         '500 ML': 18,
-#         'Potão': 20,
-#     }
+TAMANHO_VALORES = {
+        '300 ML': 12,
+        '400 ML': 15,
+        '500 ML': 18,
+        'Potão': 20,
+    }
 
 
 def pedido_whatsapp(request):
@@ -213,13 +213,13 @@ def pedido_whatsapp(request):
         for adicional in objetos_adicionais:
             pedido.valor_do_pedido += Decimal(2)
        
-        # pedido.save()
+        pedido.save()
 
-        # pedido.caldas.set(Caldas.objects.filter(nome__in=caldas))
-        # pedido.creme.set(Cremes.objects.filter(nome__in=cremes))
-        # pedido.fruta.set(Frutas.objects.filter(nome__in=frutas))
-        # pedido.outros.set(Outros.objects.filter(nome__in=outros))
-        # pedido.adicionais.set(objetos_adicionais)
+        pedido.caldas.set(Caldas.objects.filter(nome__in=caldas))
+        pedido.creme.set(Cremes.objects.filter(nome__in=cremes))
+        pedido.fruta.set(Frutas.objects.filter(nome__in=frutas))
+        pedido.outros.set(Outros.objects.filter(nome__in=outros))
+        pedido.adicionais.set(objetos_adicionais)
 
 
     context = {
@@ -447,67 +447,3 @@ def salvar_pedido(request):
         return JsonResponse({'mensagem': 'Pedidos salvos com sucesso.'})
 
     return JsonResponse({'mensagem': 'Requisição inválida.'}, status=400)
-
-
-
-# @csrf_exempt
-# def salvar_pedido(request):
-#     if request.method == 'POST':
-#         data = json.loads(request.body)
-#         pedidos = data.get('pedidos', [])
-
-#         lista = []
-#         for pedido_data in pedidos:
-            
-#             codigo_do_pedido = gerar_codigo_unico()
-
-#             print(pedido_data)
-#             pedido = Pedido()
-
-#             pedido.codigo_do_pedido = pedido_data.get('codigo_do_pedido', '')
-#             pedido.valor_do_pedido = pedido_data.get('valor_do_pedido', '')
-#             pedido.tamanho_acai = pedido_data.get('tamanho_acai', '')
-#             pedido.bairro = pedido_data.get('bairro', '')
-#             pedido.rua = pedido_data.get('rua', '')
-#             pedido.numero_da_casa = pedido_data.get('numero_da_casa', '')
-#             pedido.complemento = pedido_data.get('complemento', '')
-#             pedido.nome = pedido_data.get('nome', '')
-#             pedido.forma_de_pagamento = pedido_data.get('forma_de_pagamento', '')
-#             pedido.dinheiro_valor = pedido_data.get('dinheiro_valor', '')
-#             pedido.codigo_do_pedido = codigo_do_pedido
-
-#             pedido.save()
-
-#             # Adicionando Caldas
-#             caldas_data = pedido_data.get('caldas', [])
-#             for calda_nome in caldas_data:
-#                 calda, _ = Caldas.objects.get_or_create(nome=calda_nome)
-#                 pedido.caldas.add(calda)
-
-#             # Adicionando Cremes
-#             cremes_data = pedido_data.get('creme', [])
-#             for creme_nome in cremes_data:
-#                 creme, _ = Cremes.objects.get_or_create(nome=creme_nome)
-#                 pedido.creme.add(creme)
-
-#             # Adicionando Frutas
-#             frutas_data = pedido_data.get('fruta', [])
-#             for fruta_nome in frutas_data:
-#                 fruta, _ = Frutas.objects.get_or_create(nome=fruta_nome)
-#                 pedido.fruta.add(fruta)
-
-#             # Adicionando Outros
-#             outros_data = pedido_data.get('outros', [])
-#             for outro_nome in outros_data:
-#                 outro, _ = Outros.objects.get_or_create(nome=outro_nome)
-#                 pedido.outros.add(outro)
-
-#             # Adicionando Adicionais
-#             adicionais_data = pedido_data.get('adicionais', [])
-#             for adicional_nome in adicionais_data:
-#                 adicional, _ = Adicionais.objects.get_or_create(nome=adicional_nome)
-#                 pedido.adicionais.add(adicional)
-
-#         return JsonResponse({'mensagem': 'Pedidos salvos com sucesso.'})
-
-#     return JsonResponse({'mensagem': 'Requisição inválida.'}, status=400)

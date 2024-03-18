@@ -1,18 +1,6 @@
 version: '3'
 
 services:
-  django:
-    build: .
-    command: python3 manage.py runserver 127.0.0.1:8000
-    volumes:
-      - .:/app
-    ports:
-      - "8000:8000"
-    depends_on:
-      - db
-    environment:
-      - DATABASE_URL=postgres://postgres:root@db:5432/acai
-
   db:
     image: postgres
     environment:
