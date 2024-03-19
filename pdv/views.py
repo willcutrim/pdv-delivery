@@ -155,11 +155,11 @@ def deletar_relatorio(request, id):
 
 
 
-for tamanho in Acai.objects.all():
-    print(tamanho.preco_do_acai)
-    TAMANHO_VALORES = {
-        tamanho.tamaho_do_acai: tamanho.preco_do_acai,
-    }
+# for tamanho in Acai.objects.all():
+#     print(tamanho.preco_do_acai)
+#     TAMANHO_VALORES = {
+#         tamanho.tamaho_do_acai: tamanho.preco_do_acai,
+#     }
 
 
 TAMANHO_VALORES = {
@@ -362,14 +362,6 @@ def realizar_pedido_sistema(request):
 
 
 
-# class RetornarNumeroPedido(APIView):
-
-#     def get(self, request, *args, **kwargs):
-#         numero_pedido = Pedido.objects.last()
-#         print(numero_pedido.codigo_do_pedido)
-#         serializer = PedidoSerializer(numero_pedido)
-#         return Response(serializer.data)
-    
 
 @login_required(login_url="login")
 def produtos(request):

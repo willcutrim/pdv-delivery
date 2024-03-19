@@ -41,7 +41,7 @@ class RelatorioEntradaSaida(models.Model):
 
 class Acai(models.Model):
     tamaho_do_acai = models.CharField(max_length=255, blank=True, null=True)
-    preco_do_acai = models.DecimalField(decimal_places=2, max_digits=10)
+    # preco_do_acai = models.DecimalField(decimal_places=2, max_digits=10)
 
     def __str__(self):
         return self.tamaho_do_acai
