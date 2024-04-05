@@ -1,7 +1,7 @@
 from django.db import models
 from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
-
+from django.db.models import ProtectedError
 
 
 
@@ -126,3 +126,36 @@ def create_relatorio_entrada_(sender, instance, created, **kwargs):
             valor=instance.valor_do_pedido,
             data=instance.create
         )
+
+
+# @receiver(post_save, sender=Saida)
+# def deletar_relatorio_entrada_saida(sender, instance, **kwargs):
+#     RelatorioEntradaSaida.objects.filter(id_movimento=instance.pk).delete()
+
+# @receiver(post_save, sender=RelatorioEntradaSaida)
+# def deletar_relatorio_entrada(sender, instance, **kwargs):
+#     Saida.objects.filter(pk=instance.pk).delete()
+
+
+
+@receiver(pre_delete, sender=RelatorioEntradaSaida)
+def delete_related_pedido(sender, instance, **kwargs):
+    try:
+        pedido = Pedido.objects.get(id=instance.id_movimento, saida_status='Entrada')
+        pre_delete.disconnect(delete_related_relatorio, sender=Pedido)
+        pedido.delete()
+    except (Pedido.DoesNotExist, ProtectedError):
+        pass
+    finally:
+        pre_delete.connect(delete_related_relatorio, sender=Pedido)
+
+@receiver(pre_delete, sender=Pedido)
+def delete_related_relatorio(sender, instance, **kwargs):
+    try:
+        relatorio = RelatorioEntradaSaida.objects.get(id_movimento=instance.pk, tipo='Entrada')
+        pre_delete.disconnect(delete_related_pedido, sender=RelatorioEntradaSaida)
+        relatorio.delete()
+    except (RelatorioEntradaSaida.DoesNotExist, ProtectedError):
+        pass
+    finally:
+        pre_delete.connect(delete_related_pedido, sender=RelatorioEntradaSaida)

@@ -3,7 +3,7 @@ import random
 from .models import Pedido
 
 
-def gerar_codigo_unico():
+def gerar_codigo_unico() -> int:
 
     codigo = random.randint(10000, 99999)
     while Pedido.objects.filter(codigo_do_pedido=codigo).exists():
@@ -12,7 +12,7 @@ def gerar_codigo_unico():
 
 
 
-def converter_para_int(valor):
+def converter_para_int(valor) -> int:
 
     try:
         return int(valor)
