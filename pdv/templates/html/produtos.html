@@ -4,13 +4,30 @@
 
 
 {% block content %}
-<div class="row">
-        <div class="col-lg-6 col-md-12">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h4 class="card-title">Cremes</h4> 
-                </div>
-                <div class="card-body">
+
+<div class="col-lg-12 col-md-12">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h4 class="card-title">Selecionar Categoria</h4>
+            <button class="btn btn-primary" type="button" onclick="showModalAdd()"><i class="icon-plus"></i></button>
+        </div>
+        <div class="card-body">
+            <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link active" id="pills-cremes-tab" data-toggle="pill" href="#pills-cremes" role="tab" aria-controls="pills-cremes" aria-selected="true">Cremes</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" id="pills-caldas-tab" data-toggle="pill" href="#pills-caldas" role="tab" aria-controls="pills-caldas" aria-selected="false">Caldas</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" id="pills-frutas-tab" data-toggle="pill" href="#pills-frutas" role="tab" aria-controls="pills-frutas" aria-selected="false">Frutas</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" id="pills-outros-tab" data-toggle="pill" href="#pills-outros" role="tab" aria-controls="pills-outros" aria-selected="false">Outros</a>
+                </li>
+            </ul>
+            <div class="tab-content" id="pills-tabContent">
+                <div class="tab-pane fade show active" id="pills-cremes" role="tabpanel" aria-labelledby="pills-cremes-tab">
                     <div class="table-responsive">
                         <table class="table table-striped mb-0">
                             <thead>
@@ -22,29 +39,22 @@
                             </thead>
                             <tbody>
                                 {% for creme in cremes %}
-                                    <tr>
-                                        <td>{{ creme.pk|default:"-----"  }}</td>
-                                        <td>{{ creme.nome|default:"-----"  }}</td>
-                                        <td>
-                                            <form action="" method="post" class="d-inline" id="deleteForm{{ creme.id }}">{% csrf_token %}
-                                                <button class="btn btn-danger" type="button" onclick="confirmDelete({{ creme.id }})"><i class="icon-trash"></i></button>
-                                            </form>
-                                        </td>
-                                    </tr>
+                                <tr>
+                                    <td>{{ creme.pk|default:"-----" }}</td>
+                                    <td>{{ creme.nome|default:"-----" }}</td>
+                                    <td>
+                                        <form action="{% url 'deletar-cremes' creme.id %}" method="post" class="d-inline" id="deleteForm{{ creme.id }}">
+                                            {% csrf_token %}
+                                            <button class="btn btn-danger" type="button" onclick="confirmDelete({{ creme.id }})"><i class="icon-trash"></i></button>
+                                        </form>
+                                    </td>
+                                </tr>
                                 {% endfor %}
                             </tbody>
                         </table>
                     </div>
                 </div>
-            </div>
-            
-        </div>
-        <div class="col-lg-6 col-md-12">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h4 class="card-title">Caldas</h4> 
-                </div>
-                <div class="card-body">
+                <div class="tab-pane fade" id="pills-caldas" role="tabpanel" aria-labelledby="pills-caldas-tab">
                     <div class="table-responsive">
                         <table class="table table-striped mb-0">
                             <thead>
@@ -56,29 +66,22 @@
                             </thead>
                             <tbody>
                                 {% for calda in caldas %}
-                                    <tr>
-                                        <td>{{ calda.pk|default:"-----"  }}</td>
-                                        <td>{{ calda.nome|default:"-----"  }}</td>
-                                        <td>
-                                            <form action="{% url 'deletar-caldas' calda.id %}" method="post" class="d-inline" id="deleteForm{{ calda.id }}">{% csrf_token %}
-                                                <button class="btn btn-danger" type="button" onclick="confirmDelete({{ calda.id }})"><i class="icon-trash"></i></button>
-                                            </form>
-                                        </td>
-                                    </tr>
+                                <tr>
+                                    <td>{{ calda.pk|default:"-----" }}</td>
+                                    <td>{{ calda.nome|default:"-----" }}</td>
+                                    <td>
+                                        <form action="{% url 'deletar-caldas' calda.id %}" method="post" class="d-inline" id="deleteForm{{ calda.id }}">
+                                            {% csrf_token %}
+                                            <button class="btn btn-danger" type="button" onclick="confirmDelete({{ calda.id }})"><i class="icon-trash"></i></button>
+                                        </form>
+                                    </td>
+                                </tr>
                                 {% endfor %}
                             </tbody>
                         </table>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <div class="col-lg-6 col-md-12">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h4 class="card-title">Frutas</h4> 
-                </div>
-                <div class="card-body">
+                <div class="tab-pane fade" id="pills-frutas" role="tabpanel" aria-labelledby="pills-frutas-tab">
                     <div class="table-responsive">
                         <table class="table table-striped mb-0">
                             <thead>
@@ -90,30 +93,22 @@
                             </thead>
                             <tbody>
                                 {% for fruta in frutas %}
-                                    <tr>
-                                        <td>{{ fruta.pk|default:"-----"  }}</td>
-                                        <td>{{ fruta.nome|default:"-----"  }}</td>
-                                        <td>
-                                            <form action="" method="post" class="d-inline" id="deleteForm{{ fruta.id }}">{% csrf_token %}
-                                                <button class="btn btn-danger" type="button" onclick="confirmDelete({{ fruta.id }})"><i class="icon-trash"></i></button>
-                                            </form>
-                                        </td>
-                                    </tr>
+                                <tr>
+                                    <td>{{ fruta.pk|default:"-----" }}</td>
+                                    <td>{{ fruta.nome|default:"-----" }}</td>
+                                    <td>
+                                        <form action="{% url 'deletar-frutas' fruta.id %}" method="post" class="d-inline" id="deleteForm{{ fruta.id }}">
+                                            {% csrf_token %}
+                                            <button class="btn btn-danger" type="button" onclick="confirmDelete({{ fruta.id }})"><i class="icon-trash"></i></button>
+                                        </form>
+                                    </td>
+                                </tr>
                                 {% endfor %}
                             </tbody>
                         </table>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        
-        <div class="col-lg-6 col-md-12">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h4 class="card-title">Frutas</h4> 
-                </div>
-                <div class="card-body">
+                <div class="tab-pane fade" id="pills-outros" role="tabpanel" aria-labelledby="pills-outros-tab">
                     <div class="table-responsive">
                         <table class="table table-striped mb-0">
                             <thead>
@@ -125,15 +120,16 @@
                             </thead>
                             <tbody>
                                 {% for outro in outros %}
-                                    <tr>
-                                        <td>{{ outro.pk|default:"-----"  }}</td>
-                                        <td>{{ outro.nome|default:"-----"  }}</td>
-                                        <td>
-                                            <form action="" method="post" class="d-inline" id="deleteForm{{ outro.id }}">{% csrf_token %}
-                                                <button class="btn btn-danger" type="button" onclick="confirmDelete({{ outro.id }})"><i class="icon-trash"></i></button>
-                                            </form>
-                                        </td>
-                                    </tr>
+                                <tr>
+                                    <td>{{ outro.pk|default:"-----" }}</td>
+                                    <td>{{ outro.nome|default:"-----" }}</td>
+                                    <td>
+                                        <form action="{% url 'deletar-outros' outro.id %}" method="post" class="d-inline" id="deleteForm{{ outro.id }}">
+                                            {% csrf_token %}
+                                            <button class="btn btn-danger" type="button" onclick="confirmDelete({{ outro.id }})"><i class="icon-trash"></i></button>
+                                        </form>
+                                    </td>
+                                </tr>
                                 {% endfor %}
                             </tbody>
                         </table>
@@ -143,11 +139,43 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade text-center" id="addModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel8" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header bg-primary white">
+          <h4 class="modal-title" id="myModalLabel8">Adicionar categoria</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body text-left" id="body-modal">
+            <form action="{% url 'cadastrar-categoria' %}" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <select class="form-control" id="categoriaSelect" name="categoria">
+                        <option value="Caldas">Caldas</option>
+                        <option value="Cremes">Cremes</option>
+                        <option value="Frutas">Frutas</option>
+                        <option value="Outros">Outros</option>
+                    </select>
+                </div>
+                <input type="text" class="form-control mb-1" name="nome" id="nome" placeholder="Acompanhamento">
+                <button type="submit" class="btn btn-primary">Adicionar</button>
+            </form>
+            
+        </div>
+        <div class="modal-footer" id="footer-modal">
+
+        </div>
+      </div>
+    </div>
+</div>
 <script src="{% static 'js/sweetalert2.all.min.js'%}"></script>
 <script src="{% static 'js/sweetalert2@11.js' %}"></script>
-<script src="{% static "jquery/jquery.min.js"%}"></script>
+<script src="{% static 'jquery/jquery.min.js'%}"></script>
 <script>
-    function confirmDelete(vendaId) {
+    function confirmDelete(categoriaId) {
         Swal.fire({
             title: 'Tem certeza?',
             text: 'Você não poderá recuperar este registro!',
@@ -159,9 +187,14 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 // If confirmed, submit the corresponding form
-                document.getElementById('deleteForm' + vendaId).submit();
+                document.getElementById('deleteForm' + categoriaId).submit();
             }
         });
+    } 
+
+    function showModalAdd(){
+        $('#addModal').modal('show');
     }
+
 </script>
 {% endblock content %}

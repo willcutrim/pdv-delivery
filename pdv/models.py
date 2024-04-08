@@ -128,16 +128,6 @@ def create_relatorio_entrada_(sender, instance, created, **kwargs):
         )
 
 
-# @receiver(post_save, sender=Saida)
-# def deletar_relatorio_entrada_saida(sender, instance, **kwargs):
-#     RelatorioEntradaSaida.objects.filter(id_movimento=instance.pk).delete()
-
-# @receiver(post_save, sender=RelatorioEntradaSaida)
-# def deletar_relatorio_entrada(sender, instance, **kwargs):
-#     Saida.objects.filter(pk=instance.pk).delete()
-
-
-
 @receiver(pre_delete, sender=RelatorioEntradaSaida)
 def delete_related_pedido(sender, instance, **kwargs):
     try:
@@ -145,7 +135,7 @@ def delete_related_pedido(sender, instance, **kwargs):
         pre_delete.disconnect(delete_related_relatorio, sender=Pedido)
         pedido.delete()
     except (Pedido.DoesNotExist, ProtectedError):
-        pass
+        pass # algum dia eu trato esse error
     finally:
         pre_delete.connect(delete_related_relatorio, sender=Pedido)
 
@@ -156,6 +146,6 @@ def delete_related_relatorio(sender, instance, **kwargs):
         pre_delete.disconnect(delete_related_pedido, sender=RelatorioEntradaSaida)
         relatorio.delete()
     except (RelatorioEntradaSaida.DoesNotExist, ProtectedError):
-        pass
+        pass # algum dia eu trato esse error(Deus abençoe)
     finally:
         pre_delete.connect(delete_related_pedido, sender=RelatorioEntradaSaida)

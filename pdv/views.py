@@ -376,13 +376,67 @@ def produtos(request):
 
 
 @login_required(login_url="login")
-def deletar_produto_caldas(request, id):
+def deletar_caldas(request, id):
 
     if request.method == 'POST':    
         calda = get_object_or_404(Caldas, id=id)
-        print(f'la ele+ {calda.nome}')
-        # calda.delete()
-        # return redirect('produtos')
+        calda.delete()
+        return redirect('produtos')
+
+
+@login_required(login_url="login")
+def deletar_caldas(request, id):
+
+    if request.method == 'POST':    
+        calda = get_object_or_404(Caldas, id=id)
+        calda.delete()
+        return redirect('produtos')
+    
+
+@login_required(login_url="login")
+def deletar_cremes(request, id):
+
+    if request.method == 'POST':    
+        creme = get_object_or_404(Cremes, id=id)
+        creme.delete()
+        return redirect('produtos')
+    
+
+@login_required(login_url="login")
+def deletar_frutas(request, id):
+
+    if request.method == 'POST':    
+        fruta = get_object_or_404(Frutas, id=id)
+        fruta.delete()
+        return redirect('produtos')
+    
+
+@login_required(login_url="login")
+def deletar_outros(request, id):
+
+    if request.method == 'POST':    
+        outro = get_object_or_404(Outros, id=id)
+        outro.delete()
+        return redirect('produtos')
+
+
+def salvar_categoria(request):
+    
+    if request.method == 'POST':
+        
+        categoria = request.POST.get('categoria')
+        nome = request.POST.get('nome')
+
+        if categoria == 'Caldas':
+            Caldas.objects.create(nome=nome)
+        elif categoria == 'Cremes':
+            Cremes.objects.create(nome=nome)
+        elif categoria == 'Frutas':
+            Frutas.objects.create(nome=nome)
+        elif categoria == 'Outros':
+            Outros.objects.create(nome=nome)
+
+        return redirect('produtos')
 
 
 @csrf_exempt

@@ -25,7 +25,13 @@ urlpatterns = [
 
     path('produtos', views.produtos, name='produtos'),
 
-    path('deletar-caldas/<int:id>', views.deletar_produto_caldas, name='deletar-caldas'),
+    path('deletar-caldas/<int:id>', views.deletar_caldas, name='deletar-caldas'),
+    path('deletar-cremes/<int:id>', views.deletar_cremes, name='deletar-cremes'),
+    path('deletar-frutas/<int:id>', views.deletar_frutas, name='deletar-frutas'),
+    path('deletar-outros/<int:id>', views.deletar_outros, name='deletar-outros'),
 
     path('salvar_pedido/', views.salvar_pedido, name='salvar_pedido'),
+
+
+    path('cadastrar-categoria', views.salvar_categoria, name='cadastrar-categoria'),
 ]
